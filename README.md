@@ -47,3 +47,15 @@ L'utilisateur peut les modifier ou les supprimmer ou accèder à la page de dét
 <br>
 
 <img width="638" height="800" alt="image" src="https://github.com/user-attachments/assets/9b4e95fb-c01c-49c9-8d81-ad8e638949fc" />
+
+## Choix technique ROOM :
+
+Pour le stackage des données, j'ai choisie d'utiliser ROOM, une bibliothèque officielle d’Android reposant sur SQLite. ROOM permet de faire une base de données en local (ne nécessite donc pas de connéxion contrairement à une API par exmple) et est composée de plusieurs classes : 
+
+- Les classes Entity : classes correspondantes aux entitées de la BDD.
+- La classe DAO : permet d'interagir avec la BDD (query, insert, delete etc...)
+- La classe DataBase : contient la BDD.
+
+sources : 
+- https://developer.android.com/training/data-storage/room?hl=fr#kotlin
+- https://developer.android.com/codelabs/basic-android-kotlin-compose-persisting-data-room?hl=fr#3
