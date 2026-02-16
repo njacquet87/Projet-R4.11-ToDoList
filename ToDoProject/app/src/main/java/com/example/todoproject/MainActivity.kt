@@ -7,22 +7,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,9 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.text.style.LineHeightStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -61,6 +47,11 @@ private const val LOGIN = "login"
 private const val APP_TITLE = "// TODO"
 private const val HOME = "home"
 
+// Mock data for tasks
+private val mockTask = mapOf("titre 1" to "en cours",
+                        "titre 2" to "terminé",
+                        "titre 3" to "dépasée")
+
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
@@ -83,14 +74,18 @@ fun AppNavigation() {
 
 @Composable
 fun LogScreen(navController: NavController) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp),
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
 
         Text(text = APP_TITLE,
             fontSize = 40.sp)
 
-        Spacer(modifier = Modifier.height(24.dp).background(Color.White))
+        Spacer(modifier = Modifier
+            .height(24.dp)
+            .background(Color.White))
 
         Text(text = "Entrer votre nom et votre prenom",
             style = MaterialTheme.typography.bodySmall)
@@ -106,7 +101,9 @@ fun LogScreen(navController: NavController) {
         TextField(value = name,
             onValueChange = {newText -> name = newText},
             label = {Text("Entrer votre nom")},
-            modifier = Modifier.fillMaxWidth().padding(16.dp))
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp))
 
 
         Text(text = "Prenom",
@@ -120,10 +117,12 @@ fun LogScreen(navController: NavController) {
         TextField(value = firstName,
             onValueChange = {newText -> firstName = newText},
             label = {Text("Entrer votre prenom")},
-            modifier = Modifier.fillMaxWidth().padding(16.dp))
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp))
 
         OutlinedButton(onClick = {
-            if (name.isNotEmpty() && firstName.isNotEmpty()) {
+            if (name.isNotEmpty() && firstName.isNotEmpty() || name.length > 10 || firstName.length > 10) {
                 navController.navigate("$HOME/$name/$firstName")
             }
         }) {
@@ -137,7 +136,11 @@ fun LogScreen(navController: NavController) {
 fun HomeScreen(navController: NavController, name: String, firstName: String) {
 
     //header
-    Row(Modifier.background(Color.LightGray).fillMaxWidth().height(100.dp).padding(10.dp, 10.dp),
+    Row(Modifier
+        .background(Color.LightGray)
+        .fillMaxWidth()
+        .height(100.dp)
+        .padding(10.dp, 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween) {
 
@@ -149,15 +152,21 @@ fun HomeScreen(navController: NavController, name: String, firstName: String) {
     }
 
     // body
-    Column(Modifier.fillMaxSize().padding(16.dp),
+    Column(Modifier
+        .fillMaxSize()
+        .padding(16.dp),
         verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
 
         // add task
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
             Text(text = "+",
                 fontSize = 15.sp,
-                modifier = Modifier.border(border = BorderStroke(2.dp, Color.Black),
-                    shape = RoundedCornerShape(5.dp)).padding(10.dp, 5.dp))
+                modifier = Modifier
+                    .border(
+                        border = BorderStroke(2.dp, Color.Black),
+                        shape = RoundedCornerShape(5.dp)
+                    )
+                    .padding(10.dp, 5.dp))
 
             Spacer(modifier = Modifier.width(16.dp))
 
@@ -167,11 +176,45 @@ fun HomeScreen(navController: NavController, name: String, firstName: String) {
         Spacer(modifier = Modifier.height(16.dp))
 
         // list of tasks
-        Column(Modifier.width(250.dp).height(500.dp)
-            .border(0.dp, Color.Gray, RoundedCornerShape(14.dp))
-            .clip(RoundedCornerShape(14.dp))
-            .background(Color.Gray)) {
+        Column(
+            Modifier
+                .width(250.dp)
+                .height(500.dp)
+                .clip(RoundedCornerShape(14.dp))
+                .background(Color.Gray)
+                .border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))
+        ) {
 
+            for (task in mockTask) {
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color.LightGray)
+                    .border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
+                    .padding(10.dp)
+                    , verticalAlignment = Alignment.CenterVertically
+                    , horizontalArrangement = Arrangement.SpaceBetween) {
+
+                    Column() {
+                        Text(text = task.key, style = MaterialTheme.typography.bodyMedium)
+                        Text(text = task.value, style = MaterialTheme.typography.bodySmall)
+                    }
+
+                    Row() {
+                        // use of material icons from the library material-icons-extended
+
+                        Icon(imageVector = Icons.Filled.Visibility,
+                            contentDescription = "Voir les details de la tache")
+
+                        Icon(imageVector = Icons.Filled.Edit,
+                            contentDescription = "Modifier la tache")
+
+                        Icon(imageVector = Icons.Filled.Delete,
+                            contentDescription = "Supprimer la tache")
+                    }
+                }
+            }
         }
     }
 }
