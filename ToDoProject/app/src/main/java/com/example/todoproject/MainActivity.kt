@@ -8,8 +8,10 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -27,6 +29,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.todoproject.ui.theme.ToDoProjectTheme
 
 class MainActivity : ComponentActivity() {
@@ -47,10 +50,12 @@ private const val LOGIN = "login"
 private const val APP_TITLE = "// TODO"
 private const val HOME = "home"
 
-// Mock data for tasks
-private val mockTask = mapOf("titre 1" to "en cours",
-                        "titre 2" to "terminé",
-                        "titre 3" to "dépasée")
+// Mock data for tasks — replaced map with a list of Task
+private val mockTasks = mutableListOf(
+    Task(1, "Titre 1", "Description de la tâche 1", "en cours"),
+    Task(2, "Titre 2", "Description de la tâche 2", "terminé"),
+    Task(3, "Titre 3", "Description de la tâche 3", "dépassée")
+)
 
 @Composable
 fun AppNavigation() {
@@ -62,12 +67,32 @@ fun AppNavigation() {
             LogScreen(navController)
         }
 
-        composable(route = "$HOME/{name}/{firstName}") {
+        composable(route = "$HOME/{name}/{firstName}",
+            arguments = listOf(
+                navArgument("name") { defaultValue = "" },
+                navArgument("firstName") { defaultValue = "" }
+            )) {
             // get the arguments
             backStackEntry -> val name = backStackEntry.arguments?.getString("name") ?: ""
             val firstName = backStackEntry.arguments?.getString("firstName") ?: ""
 
             HomeScreen(navController, name, firstName)
+        }
+
+        composable(route = "detail/{name}/{firstName}/{taskId}",
+            arguments = listOf(
+                navArgument("name") { defaultValue = "" },
+                navArgument("firstName") { defaultValue = "" },
+                navArgument("taskId") { defaultValue = "0" }
+            )) {
+                backStackEntry ->
+            val name = backStackEntry.arguments?.getString("name") ?: ""
+            val firstName = backStackEntry.arguments?.getString("firstName") ?: ""
+            // get taskId and find the corresponding task in the mockTasks list
+            val taskId = backStackEntry.arguments?.getString("taskId")?.toIntOrNull() ?: -1
+            val task = mockTasks.find { it.id == taskId }
+
+            DetailScreen(navController, name, firstName, task)
         }
     }
 }
@@ -132,10 +157,9 @@ fun LogScreen(navController: NavController) {
     }
 }
 
+// reusable header function
 @Composable
-fun HomeScreen(navController: NavController, name: String, firstName: String) {
-
-    //header
+fun Header(name: String, firstName: String) {
     Row(Modifier
         .background(Color.LightGray)
         .fillMaxWidth()
@@ -150,6 +174,13 @@ fun HomeScreen(navController: NavController, name: String, firstName: String) {
         Text(text = "Bienvenue $name $firstName",
             style = MaterialTheme.typography.bodySmall)
     }
+}
+
+@Composable
+fun HomeScreen(navController: NavController, name: String, firstName: String) {
+
+    //header
+    Header(name, firstName)
 
     // body
     Column(Modifier
@@ -159,14 +190,9 @@ fun HomeScreen(navController: NavController, name: String, firstName: String) {
 
         // add task
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-            Text(text = "+",
-                fontSize = 15.sp,
-                modifier = Modifier
-                    .border(
-                        border = BorderStroke(2.dp, Color.Black),
-                        shape = RoundedCornerShape(5.dp)
-                    )
-                    .padding(10.dp, 5.dp))
+            Icon(imageVector = Icons.Filled.AddCircleOutline,
+                contentDescription = "ajout d'une tache",
+                Modifier.width(35.dp).height(35.dp))
 
             Spacer(modifier = Modifier.width(16.dp))
 
@@ -185,7 +211,7 @@ fun HomeScreen(navController: NavController, name: String, firstName: String) {
                 .border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))
         ) {
 
-            for (task in mockTask) {
+            for (task in mockTasks) {
                 Row(modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp)
@@ -197,24 +223,71 @@ fun HomeScreen(navController: NavController, name: String, firstName: String) {
                     , horizontalArrangement = Arrangement.SpaceBetween) {
 
                     Column() {
-                        Text(text = task.key, style = MaterialTheme.typography.bodyMedium)
-                        Text(text = task.value, style = MaterialTheme.typography.bodySmall)
+                        Text(text = task.title, style = MaterialTheme.typography.bodyMedium)
+                        Text(text = task.status, style = MaterialTheme.typography.bodySmall)
                     }
 
                     Row() {
                         // use of material icons from the library material-icons-extended
 
-                        Icon(imageVector = Icons.Filled.Visibility,
-                            contentDescription = "Voir les details de la tache")
+                        IconButton(onClick = { navController.navigate("detail/$name/$firstName/$task.id") }) {
+                            Icon(imageVector = Icons.Filled.Visibility,
+                                contentDescription = "Voir les details de la tache")
+                        }
 
-                        Icon(imageVector = Icons.Filled.Edit,
-                            contentDescription = "Modifier la tache")
+                        IconButton(onClick = { /* TODO: implement edit functionality */ }) {
+                            Icon(imageVector = Icons.Filled.Edit,
+                                contentDescription = "Modifier la tache")
+                        }
 
-                        Icon(imageVector = Icons.Filled.Delete,
-                            contentDescription = "Supprimer la tache")
+                        IconButton(onClick = { /* TODO: implement delete functionality */ }) {
+                            Icon(imageVector = Icons.Filled.Delete,
+                                contentDescription = "Supprimer la tache")
+                        }
                     }
                 }
             }
         }
     }
 }
+
+@Composable
+fun DetailScreen(navController: NavController, name: String, firstName: String, task : Task?) {
+
+    // header
+    Header(name, firstName)
+
+    Column(Modifier
+        .fillMaxSize()
+        .padding(16.dp),
+        verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "retour")
+            }
+
+            Text(text = "Detail de la tâche")
+        }
+
+        Column(
+            Modifier
+                .width(250.dp)
+                .height(500.dp)
+                .clip(RoundedCornerShape(14.dp))
+                .background(Color.Gray)
+                .border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))
+        ) {
+            Text(text = "Titre: ${task?.title}", style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+}
+
+// mock class of task
+data class Task(
+    val id: Int,
+    val title: String,
+    val description: String,
+    val status: String
+)
