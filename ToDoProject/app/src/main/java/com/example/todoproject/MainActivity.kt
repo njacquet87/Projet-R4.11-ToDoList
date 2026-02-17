@@ -31,6 +31,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.todoproject.ui.theme.ToDoProjectTheme
+import java.time.LocalDate
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,9 +53,9 @@ private const val HOME = "home"
 
 // Mock data for tasks — replaced map with a list of Task
 private val mockTasks = mutableListOf(
-    Task(1, "Titre 1", "Description de la tâche 1", "en cours"),
-    Task(2, "Titre 2", "Description de la tâche 2", "terminé"),
-    Task(3, "Titre 3", "Description de la tâche 3", "dépassée")
+    Task(1, "Titre 1", "Description de la tâche 1", LocalDate.of(2026, 2, 17), "en cours"),
+    Task(2, "Titre 2", "Description de la tâche 2", LocalDate.of(2026, 2, 25), "terminé"),
+    Task(3, "Titre 3", "Description de la tâche 3", LocalDate.of(2026, 1, 10), "dépassée")
 )
 
 @Composable
@@ -88,11 +89,11 @@ fun AppNavigation() {
                 backStackEntry ->
             val name = backStackEntry.arguments?.getString("name") ?: ""
             val firstName = backStackEntry.arguments?.getString("firstName") ?: ""
-            // get taskId and find the corresponding task in the mockTasks list
-            val taskId = backStackEntry.arguments?.getString("taskId")?.toIntOrNull() ?: -1
-            val task = mockTasks.find { it.id == taskId }
 
-            DetailScreen(navController, name, firstName, task)
+            // get taskId to find the corresponding task in the mockTasks list in DetailScreen
+            val taskId = backStackEntry.arguments?.getString("taskId")?.toIntOrNull() ?: -1
+
+            DetailScreen(navController, name, firstName, taskId.toString())
         }
     }
 }
@@ -189,7 +190,8 @@ fun HomeScreen(navController: NavController, name: String, firstName: String) {
         verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
 
         // add task
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+        Row(modifier = Modifier.fillMaxWidth()
+            , verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
             Icon(imageVector = Icons.Filled.AddCircleOutline,
                 contentDescription = "ajout d'une tache",
                 Modifier.width(35.dp).height(35.dp))
@@ -230,7 +232,7 @@ fun HomeScreen(navController: NavController, name: String, firstName: String) {
                     Row() {
                         // use of material icons from the library material-icons-extended
 
-                        IconButton(onClick = { navController.navigate("detail/$name/$firstName/$task.id") }) {
+                        IconButton(onClick = { navController.navigate("detail/$name/$firstName/${task.id}") }) {
                             Icon(imageVector = Icons.Filled.Visibility,
                                 contentDescription = "Voir les details de la tache")
                         }
@@ -252,7 +254,7 @@ fun HomeScreen(navController: NavController, name: String, firstName: String) {
 }
 
 @Composable
-fun DetailScreen(navController: NavController, name: String, firstName: String, task : Task?) {
+fun DetailScreen(navController: NavController, name: String, firstName: String, taskId : String) {
 
     // header
     Header(name, firstName)
@@ -262,7 +264,7 @@ fun DetailScreen(navController: NavController, name: String, firstName: String, 
         .padding(16.dp),
         verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
 
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "retour")
@@ -277,11 +279,58 @@ fun DetailScreen(navController: NavController, name: String, firstName: String, 
                 .height(500.dp)
                 .clip(RoundedCornerShape(14.dp))
                 .background(Color.Gray)
-                .border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))
+                .border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp)),
         ) {
-            Text(text = "Titre: ${task?.title}", style = MaterialTheme.typography.bodyMedium)
+            val task = mockTasks.find { it.id.toString() == taskId }
+
+            Row(modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween) {
+
+                IconButton(onClick = { /* TODO: implement edit functionality */ }) {
+                    Icon(imageVector = Icons.Filled.Edit,
+                        contentDescription = "Modifier la tache")
+                }
+
+                IconButton(onClick = { /* TODO: implement delete functionality */ }) {
+                    Icon(imageVector = Icons.Filled.Delete,
+                        contentDescription = "Supprimer la tache")
+                }
+            }
+
+            Column(modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.Center) {
+
+                // title
+                TaskDetail(task, "Titre : ", task?.title ?: "Tâche non trouvée")
+
+                // description
+                TaskDetail(task, "Description : ", task?.description ?: "Tâche non trouvée")
+
+                // date
+                TaskDetail(task, "Date : ", task?.date?.toString() ?: "Tâche non trouvée")
+
+                // TODO: add status and button to change the status of the task
+            }
+
         }
     }
+}
+
+@Composable
+private fun TaskDetail(task: Task?, title: String, text : String) {
+    Text(text = title, style = MaterialTheme.typography.bodyMedium, fontSize = 15.sp)
+    Text(
+        text = text,
+        fontSize = 20.sp,
+        modifier = Modifier
+            .clip(RoundedCornerShape(10.dp))
+            .background(color = Color.LightGray)
+            .border(BorderStroke(2.dp, Color.Black), RoundedCornerShape(10.dp))
+            .padding(16.dp)
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
 }
 
 // mock class of task
@@ -289,5 +338,6 @@ data class Task(
     val id: Int,
     val title: String,
     val description: String,
+    val date : LocalDate,
     val status: String
 )
