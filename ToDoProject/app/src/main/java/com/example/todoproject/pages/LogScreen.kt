@@ -7,10 +7,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.todoproject.APP_TITLE
-import com.example.todoproject.components.getInputValue
+import com.example.todoproject.components.AppTextField
 
 
 /**
@@ -39,17 +44,18 @@ fun LogScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         // Get the name and the first name of the user for the Header component
-        val name = getInputValue("Nom", "Entrez votre nom")
+        var name by remember { mutableStateOf("") }
+        AppTextField(value = name, onValueChange = { newText -> name = newText }, inputTitle = "Nom", label = "Entrez votre nom")
 
-        val firstName = getInputValue("Prenom", "Entrez votre prenom")
+        var firstName by remember { mutableStateOf("") }
+        AppTextField(value = firstName, onValueChange = { newText -> firstName = newText }, inputTitle = "Prenom", label = "Entrez votre prenom")
 
-        OutlinedButton(onClick = {
+        Button(onClick = {
             if (name.isNotBlank() && firstName.isNotBlank()) {
                 navController.navigate("home/$name/$firstName")
             }
-        }) {
-            Text(text = "Valider",
-                color = Color.Black)
+        }, colors = ButtonDefaults.buttonColors(contentColor = Color.Black, containerColor = Color.LightGray)) {
+            Text(text = "Valider", color = Color.Black)
         }
     }
 }

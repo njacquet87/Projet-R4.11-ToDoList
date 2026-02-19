@@ -14,16 +14,27 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.todoproject.components.AppTextField
+import com.example.todoproject.components.DateInput
 import com.example.todoproject.components.Header
 import com.example.todoproject.components.IconButtonAction
+import java.time.LocalDate
 
 @Composable
 fun AddTaskScreen(navController: NavController, name: String, firstName: String) {
@@ -45,7 +56,29 @@ fun AddTaskScreen(navController: NavController, name: String, firstName: String)
         }
 
         Column(Modifier.width(250.dp).height(500.dp).clip(RoundedCornerShape(14.dp))
-            .background(Color.Gray).border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))) {
+            .background(Color.Gray).border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))
+            .padding(16.dp)) {
+
+            var title by remember { mutableStateOf("") }
+
+            AppTextField(value = title, onValueChange = { newText -> title = newText }, inputTitle = "Titre *", label = "Titre de la tache")
+
+            var description by remember { mutableStateOf("") }
+
+            AppTextField(value = description, onValueChange = { newText -> description = newText }, inputTitle = "Description *", label = "Description de la tache")
+
+            Text(text = "Date de fin de la tache", style = MaterialTheme.typography.labelLarge)
+
+            var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
+
+            DateInput(label = "Date de la tâche", selectedDate = selectedDate, onDateSelected = { selectedDate = it })
+
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                Button(onClick = {/* TODO */ navController.popBackStack()}
+                    , colors = ButtonDefaults.buttonColors(contentColor = Color.Black, containerColor = Color.LightGray)) {
+                    Text(text = "Valider", color = Color.Black)
+                }
+            }
 
         }
     }
