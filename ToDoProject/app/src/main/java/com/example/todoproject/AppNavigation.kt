@@ -45,9 +45,9 @@ fun AppNavigation() {
             val firstName = backStackEntry.arguments?.getString("firstName") ?: ""
 
             // get taskId to find the corresponding task in the mockTasks list in DetailScreen
-            val taskId = backStackEntry.arguments?.getString("taskId")?.toIntOrNull() ?: -1
+            val taskId = backStackEntry.arguments?.getString("taskId") ?: "0"
 
-            DetailScreen(navController, name, firstName, taskId.toString())
+            DetailScreen(navController, name, firstName, taskId)
         }
     }
 }

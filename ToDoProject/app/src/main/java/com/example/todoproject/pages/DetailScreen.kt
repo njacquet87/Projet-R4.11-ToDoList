@@ -58,7 +58,7 @@ fun DetailScreen(navController: NavController, name: String, firstName: String, 
                 .background(Color.Gray).border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp)),) {
 
             // Find the task from the mockTasks list using the taskId
-            val task = mockTasks.find { it.id.toString() == taskId }
+            val task = mockTasks.find { it.id == taskId.toIntOrNull() }
 
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {

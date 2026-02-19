@@ -51,7 +51,7 @@ fun HomeScreen(navController: NavController, name: String, firstName: String) {
 
             // Display each task in the mockTasks list with a TaskItem composable.
             for (task in mockTasks) {
-                TaskItem(task, onDetailClick = { navController.navigate("detail/${task.id}/$name/$firstName") },
+                TaskItem(task, onDetailClick = { navController.navigate("detail/$name/$firstName/${task.id}") },
                     onDeleteClick = { /* TODO */ },
                     onUpdateClick = { /* TODO */ })
             }

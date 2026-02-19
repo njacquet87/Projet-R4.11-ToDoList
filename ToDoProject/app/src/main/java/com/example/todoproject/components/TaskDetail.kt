@@ -26,7 +26,7 @@ import com.example.todoproject.Task
  */
 @Composable
 fun TaskDetail(task: Task?, title: String, text : String) {
-    Text(text = title, style = MaterialTheme.typography.bodyMedium, fontSize = 15.sp)
+    Text(text = title, style = MaterialTheme.typography.bodyMedium, fontSize = 12.sp)
     Text(text = text, fontSize = 20.sp, modifier = Modifier
         .clip(RoundedCornerShape(10.dp)).background(color = Color.LightGray)
         .border(BorderStroke(2.dp, Color.Black), RoundedCornerShape(10.dp)).padding(16.dp)
