@@ -48,14 +48,14 @@ fun DetailScreen(navController: NavController, name: String, firstName: String, 
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
 
             // Back Arrow to go back to the HomeScreen
-            IconButtonAction(Icons.AutoMirrored.Filled.ArrowBack, "Suppression de la tache",
+            IconButtonAction(Icons.AutoMirrored.Filled.ArrowBack, "Retour",
                 onClick = { navController.popBackStack() })
 
             Text(text = "Detail de la tâche")
         }
 
         Column(Modifier.width(250.dp).height(500.dp).clip(RoundedCornerShape(14.dp))
-                .background(Color.Gray).border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp)),) {
+                .background(Color.Gray).border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))) {
 
             // Find the task from the mockTasks list using the taskId
             val task = mockTasks.find { it.id == taskId.toIntOrNull() }

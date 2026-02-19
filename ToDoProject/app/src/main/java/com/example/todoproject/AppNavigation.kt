@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.todoproject.pages.AddTaskScreen
 import com.example.todoproject.pages.HomeScreen
 import com.example.todoproject.pages.LogScreen
 import com.example.todoproject.pages.DetailScreen
@@ -48,6 +49,17 @@ fun AppNavigation() {
             val taskId = backStackEntry.arguments?.getString("taskId") ?: "0"
 
             DetailScreen(navController, name, firstName, taskId)
+        }
+
+        composable(route = "add/{name}/{firstName}",
+            arguments = listOf(
+                navArgument("name") { defaultValue = "" },
+                navArgument("firstName") { defaultValue = "" }
+            )) { backStackEntry ->
+            val name = backStackEntry.arguments?.getString("name") ?: ""
+            val firstName = backStackEntry.arguments?.getString("firstName") ?: ""
+
+            AddTaskScreen(navController, name, firstName)
         }
     }
 }
