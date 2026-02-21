@@ -7,59 +7,32 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.todoproject.pages.AddTaskScreen
 import com.example.todoproject.pages.HomeScreen
-import com.example.todoproject.pages.LogScreen
 import com.example.todoproject.pages.DetailScreen
 
 private const val HOME = "home"
-private const val LOGIN = "login"
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = LOGIN) {
+    NavHost(navController = navController, startDestination = HOME) {
 
-        composable(route = LOGIN) {
-            LogScreen(navController)
+        composable(route = "home") {
+            HomeScreen(navController)
         }
 
-        composable(route = "$HOME/{name}/{firstName}",
+        composable(route = "detail/{taskId}",
             arguments = listOf(
-                navArgument("name") { defaultValue = "" },
-                navArgument("firstName") { defaultValue = "" }
-            )) {
-            // get the arguments
-                backStackEntry -> val name = backStackEntry.arguments?.getString("name") ?: ""
-            val firstName = backStackEntry.arguments?.getString("firstName") ?: ""
-
-            HomeScreen(navController, name, firstName)
-        }
-
-        composable(route = "detail/{name}/{firstName}/{taskId}",
-            arguments = listOf(
-                navArgument("name") { defaultValue = "" },
-                navArgument("firstName") { defaultValue = "" },
                 navArgument("taskId") { defaultValue = "0" }
             )) {
-                backStackEntry ->
-            val name = backStackEntry.arguments?.getString("name") ?: ""
-            val firstName = backStackEntry.arguments?.getString("firstName") ?: ""
-
             // get taskId to find the corresponding task in the mockTasks list in DetailScreen
-            val taskId = backStackEntry.arguments?.getString("taskId") ?: "0"
+            backStackEntry -> val taskId = backStackEntry.arguments?.getString("taskId") ?: "0"
 
-            DetailScreen(navController, name, firstName, taskId)
+            DetailScreen(navController, taskId)
         }
 
-        composable(route = "add/{name}/{firstName}",
-            arguments = listOf(
-                navArgument("name") { defaultValue = "" },
-                navArgument("firstName") { defaultValue = "" }
-            )) { backStackEntry ->
-            val name = backStackEntry.arguments?.getString("name") ?: ""
-            val firstName = backStackEntry.arguments?.getString("firstName") ?: ""
-
-            AddTaskScreen(navController, name, firstName)
+        composable(route = "add") {
+            AddTaskScreen(navController)
         }
     }
 }

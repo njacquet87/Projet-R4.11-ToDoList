@@ -17,7 +17,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,11 +35,15 @@ import com.example.todoproject.components.Header
 import com.example.todoproject.components.IconButtonAction
 import java.time.LocalDate
 
+/**
+ * Display the screen to add a task
+ * @param navController the navController to navigate between screens
+ */
 @Composable
-fun AddTaskScreen(navController: NavController, name: String, firstName: String) {
+fun AddTaskScreen(navController: NavController) {
 
     // header
-    Header(name, firstName)
+    Header()
 
     Column(Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {

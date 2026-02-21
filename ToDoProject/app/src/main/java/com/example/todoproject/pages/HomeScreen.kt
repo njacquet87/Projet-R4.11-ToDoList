@@ -27,20 +27,18 @@ import com.example.todoproject.mockTasks
  * Display the home screen with a header and a list of tasks.
  * Also display a button to add a new task.
  * @param navController the navController to navigate between screens
- * @param name the name of the user (use in Header)
- * @param firstName the first name of the user (use in Header)
  */
 @Composable
-fun HomeScreen(navController: NavController, name: String, firstName: String) {
+fun HomeScreen(navController: NavController) {
 
     //header
-    Header(name, firstName)
+    Header()
 
     // body
     Column(Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
 
-        AddTask(onClick = { navController.navigate("add/$name/$firstName") })
+        AddTask(onClick = { navController.navigate("add") })
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -50,7 +48,7 @@ fun HomeScreen(navController: NavController, name: String, firstName: String) {
 
             // Display each task in the mockTasks list with a TaskItem composable.
             for (task in mockTasks) {
-                TaskItem(task, onDetailClick = { navController.navigate("detail/$name/$firstName/${task.id}") },
+                TaskItem(task, onDetailClick = { navController.navigate("detail/${task.id}") },
                     onDeleteClick = { /* TODO */ },
                     onUpdateClick = { /* TODO */ })
             }

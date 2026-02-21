@@ -17,18 +17,14 @@ import androidx.compose.ui.unit.sp
 import com.example.todoproject.APP_TITLE
 
 /**
- * Display the header of the HomeScreen with the app title and a welcome message
+ * Display the header of the HomeScreen with the app title
  * Use in every pages
- * @param name the name of the user
- * @param firstName the first name of the user
  */
 @Composable
-fun Header(name: String, firstName: String) {
+fun Header() {
     Row(Modifier.background(Color.LightGray).fillMaxWidth().height(100.dp).padding(10.dp, 10.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
 
         Text(text = APP_TITLE, fontSize = 30.sp)
-
-        Text(text = "Bienvenue $name $firstName", style = MaterialTheme.typography.bodySmall)
     }
 }

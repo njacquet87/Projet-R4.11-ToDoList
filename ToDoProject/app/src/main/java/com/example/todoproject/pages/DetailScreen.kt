@@ -32,15 +32,13 @@ import com.example.todoproject.mockTasks
 /**
  * Display the details of a task
  * @param navController the navController to navigate between screens
- * @param name the name of the user (use in Header)
- * @param firstName the first name of the user (use in Header)
  * @param taskId the id of the task to display. The task is found from the mockTasks list using this id
  */
 @Composable
-fun DetailScreen(navController: NavController, name: String, firstName: String, taskId : String) {
+fun DetailScreen(navController: NavController, taskId : String) {
 
     // header
-    Header(name, firstName)
+    Header()
 
     Column(Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
