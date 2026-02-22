@@ -1,8 +1,6 @@
 package com.example.todoproject.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,7 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.todoproject.Task
+import com.example.todoproject.data.TaskEntity
 
 /**
  * Reusable function to display a title and a detail.
@@ -25,7 +23,7 @@ import com.example.todoproject.Task
  * @param text the text to display in the detail
  */
 @Composable
-fun TaskDetail(task: Task?, title: String, text : String) {
+fun TaskDetail(task: TaskEntity, title: String, text: String) {
     Text(text = title, style = MaterialTheme.typography.labelLarge)
     Text(text = text, fontSize = 15.sp, modifier = Modifier
         .clip(RoundedCornerShape(10.dp)).background(color = Color.LightGray)

@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.todoproject.Task
+import com.example.todoproject.data.TaskEntity
 
 /**
  * Reusable function to display a task in the list of tasks on the HomeScreen
@@ -31,7 +31,7 @@ import com.example.todoproject.Task
  * @param onUpdateClick the action to perform when the update button is clicked
  */
 @Composable
-fun TaskItem(task: Task, onDetailClick: () -> Unit, onDeleteClick: () -> Unit, onUpdateClick: () -> Unit) {
+fun TaskItem(task: TaskEntity, onDetailClick: () -> Unit, onDeleteClick: () -> Unit, onUpdateClick: () -> Unit) {
     Row(modifier = Modifier.fillMaxWidth().padding(10.dp).clip(RoundedCornerShape(10.dp))
             .background(Color.LightGray).border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
             .padding(10.dp),

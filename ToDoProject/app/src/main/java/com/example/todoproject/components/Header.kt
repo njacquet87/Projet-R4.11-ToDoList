@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.todoproject.APP_TITLE
 
 /**
  * Display the header of the HomeScreen with the app title
@@ -25,6 +24,6 @@ fun Header() {
     Row(Modifier.background(Color.LightGray).fillMaxWidth().height(100.dp).padding(10.dp, 10.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
 
-        Text(text = APP_TITLE, fontSize = 30.sp)
+        Text(text = "//TODO", fontSize = 30.sp)
     }
 }

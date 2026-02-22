@@ -24,18 +24,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.todoproject.ViewModel.TaskViewModel
 import com.example.todoproject.components.Header
 import com.example.todoproject.components.IconButtonAction
 import com.example.todoproject.components.TaskDetail
-import com.example.todoproject.mockTasks
+import androidx.compose.runtime.collectAsState
 
 /**
  * Display the details of a task
  * @param navController the navController to navigate between screens
+ * @param viewModel the TaskViewModel to manage the tasks data
  * @param taskId the id of the task to display. The task is found from the mockTasks list using this id
  */
 @Composable
-fun DetailScreen(navController: NavController, taskId : String) {
+fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId : Int) {
 
     // header
     Header()
@@ -55,8 +57,7 @@ fun DetailScreen(navController: NavController, taskId : String) {
         Column(Modifier.width(250.dp).height(500.dp).clip(RoundedCornerShape(14.dp))
                 .background(Color.Gray).border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))) {
 
-            // Find the task from the mockTasks list using the taskId
-            val task = mockTasks.find { it.id == taskId.toIntOrNull() }
+            val task = viewModel.getTaskById(taskId)
 
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
@@ -71,17 +72,16 @@ fun DetailScreen(navController: NavController, taskId : String) {
             }
 
             // Task details
-            Column(modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.Center) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.Center) {
 
                 // title
-                TaskDetail(task, "Titre : ", task?.title ?: "Tâche non trouvée")
+                TaskDetail(task.collectAsState().value, "Titre : ", task.collectAsState().value.title)
 
                 // description
-                TaskDetail(task, "Description : ", task?.description ?: "Tâche non trouvée")
+                TaskDetail(task.collectAsState().value, "Description : ", task.collectAsState().value.description)
 
                 // date
-                TaskDetail(task, "Date : ", task?.date?.toString() ?: "Tâche non trouvée")
+                TaskDetail(task.collectAsState().value, "Date : ", task.collectAsState().value.date)
 
                 // TODO: add status and button to change the status of the task
             }
@@ -89,3 +89,4 @@ fun DetailScreen(navController: NavController, taskId : String) {
         }
     }
 }
+

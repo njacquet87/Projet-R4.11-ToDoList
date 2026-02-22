@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.todoproject.ViewModel.TaskViewModel
 import com.example.todoproject.components.AppTextField
 import com.example.todoproject.components.DateInput
 import com.example.todoproject.components.Header
@@ -38,9 +39,10 @@ import java.time.LocalDate
 /**
  * Display the screen to add a task
  * @param navController the navController to navigate between screens
+ * @param viewModel the TaskViewModel to manage the tasks data
  */
 @Composable
-fun AddTaskScreen(navController: NavController) {
+fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
 
     // header
     Header()
@@ -86,3 +88,4 @@ fun AddTaskScreen(navController: NavController) {
         }
     }
 }
+
