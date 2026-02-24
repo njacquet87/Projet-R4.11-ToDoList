@@ -39,6 +39,9 @@ import androidx.compose.runtime.collectAsState
 @Composable
 fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId : Int) {
 
+    val taskState = viewModel.getTaskById(taskId).collectAsState(initial = null)
+    val task = taskState.value
+
     // header
     Header()
 
@@ -57,8 +60,6 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
         Column(Modifier.width(250.dp).height(500.dp).clip(RoundedCornerShape(14.dp))
                 .background(Color.Gray).border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))) {
 
-            val task = viewModel.getTaskById(taskId)
-
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
 
@@ -72,20 +73,31 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
             }
 
             // Task details
-            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.Center) {
 
-                // title
-                TaskDetail(task.collectAsState().value, "Titre : ", task.collectAsState().value.title)
+            if (task != null) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.Center) {
 
-                // description
-                TaskDetail(task.collectAsState().value, "Description : ", task.collectAsState().value.description)
+                    // title
+                    TaskDetail(task, "Titre : ", task.title)
 
-                // date
-                TaskDetail(task.collectAsState().value, "Date : ", task.collectAsState().value.date)
+                    // description
+                    TaskDetail(task, "Description : ", task.description)
 
-                // TODO: add status and button to change the status of the task
+                    // date
+                    TaskDetail(task, "Date : ", task.date)
+
+                    // TODO: add status and button to change the status of the task
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(10.dp)
+                        .clip(RoundedCornerShape(10.dp)).background(Color.LightGray)
+                        .border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
+                        .padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text(text = "Tâche non trouvée")
+                }
             }
-
         }
     }
 }

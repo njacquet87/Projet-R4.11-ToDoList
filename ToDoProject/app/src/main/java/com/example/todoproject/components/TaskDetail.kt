@@ -24,8 +24,8 @@ import com.example.todoproject.data.TaskEntity
  */
 @Composable
 fun TaskDetail(task: TaskEntity, title: String, text: String) {
-    Text(text = title, style = MaterialTheme.typography.labelLarge)
-    Text(text = text, fontSize = 15.sp, modifier = Modifier
+    Text(text = title, fontSize = 20.sp)
+    Text(text = text, fontSize = 25.sp, modifier = Modifier
         .clip(RoundedCornerShape(10.dp)).background(color = Color.LightGray)
         .padding(16.dp, 10.dp, 16.dp, 10.dp))
 

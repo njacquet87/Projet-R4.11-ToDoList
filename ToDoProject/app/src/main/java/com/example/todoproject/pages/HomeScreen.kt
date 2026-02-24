@@ -5,8 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -19,11 +21,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.todoproject.ViewModel.TaskViewModel
 import com.example.todoproject.components.AddTask
 import com.example.todoproject.components.Header
 import com.example.todoproject.components.TaskItem
 import androidx.compose.runtime.collectAsState
+import com.example.todoproject.ViewModel.TaskViewModel
 
 /**
  * Display the home screen with a header and a list of tasks.
@@ -53,12 +55,15 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
 
             // Display each task in the mockTasks list with a TaskItem composable.
             if (tasks.isEmpty()) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(text = "Aucune tâche à afficher")
+                Row(modifier = Modifier.fillMaxWidth().padding(10.dp).clip(RoundedCornerShape(10.dp))
+                    .background(Color.LightGray).border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
+                    .padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text(text = "Aucune tâche à afficher")
+                }
             } else {
                 for (task in tasks) {
-                    TaskItem(
-                        task, onDetailClick = { navController.navigate("detail/${task.id}") },
+                    TaskItem(task, onDetailClick = { navController.navigate("detail/${task.id}") },
                         onDeleteClick = { /* TODO */ },
                         onUpdateClick = { /* TODO */ })
                 }

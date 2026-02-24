@@ -79,8 +79,9 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
             DateInput(label = "Date de la tâche", selectedDate = selectedDate, onDateSelected = { selectedDate = it })
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                Button(onClick = {/* TODO */ navController.popBackStack()}
-                    , colors = ButtonDefaults.buttonColors(contentColor = Color.Black, containerColor = Color.LightGray)) {
+                Button(onClick = {addTask(viewModel, title, description, selectedDate, navController)},
+                    colors = ButtonDefaults.buttonColors(contentColor = Color.Black, containerColor = Color.LightGray),
+                    enabled = areAllInputNotBlank(title, description, selectedDate)) {
                     Text(text = "Valider", color = Color.Black)
                 }
             }
@@ -89,3 +90,26 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
     }
 }
 
+/**
+ * Check if all the inputs are not blank to enable the "Valider" button
+ * @param title the title of the task
+ * @param description the description of the task
+ * @param selectedDate the date of the task
+ * @return true if all the inputs are not blank, false otherwise
+ */
+fun areAllInputNotBlank(title: String, description: String, selectedDate: LocalDate?): Boolean {
+    return title.isNotBlank() && description.isNotBlank() && selectedDate.toString().isNotBlank()
+}
+
+/**
+ * Add a task to the list of tasks in the TaskViewModel and navigate back to the HomeScreen
+ * @param viewModel the TaskViewModel to manage the tasks data
+ * @param title the title of the task
+ * @param description the description of the task
+ * @param date the date of the task
+ * @param navController the navController to navigate between screens
+ */
+fun addTask(viewModel: TaskViewModel, title: String, description: String, date: LocalDate?, navController: NavController) {
+    viewModel.addTask(title, description, date.toString())
+    navController.popBackStack()
+}

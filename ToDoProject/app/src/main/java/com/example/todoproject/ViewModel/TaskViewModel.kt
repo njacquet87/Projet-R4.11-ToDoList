@@ -10,6 +10,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
+/**
+ * ViewModel for managing tasks in the To_Do application.
+ * A ViewModel interacts with the Repository to perform operations on an entity (TaskEntity)
+ * and provides data to the UI.
+ */
 class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
 
     val tasks: StateFlow<List<TaskEntity>> = repository.getAllTasks().stateIn(
@@ -31,7 +36,7 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
                     title = title,
                     description = description,
                     date = date,
-                    status = "IN_PROGRESS"
+                    status = "En cours"
                 )
             )
         }

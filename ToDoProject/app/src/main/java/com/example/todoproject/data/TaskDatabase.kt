@@ -5,6 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
+/**
+ * Room database for managing tasks in the To-Do application.
+ * This class defines the database configuration.
+ */
 @Database(entities = [TaskEntity::class], version = 1, exportSchema = false)
 abstract class TaskDatabase : RoomDatabase() {
 

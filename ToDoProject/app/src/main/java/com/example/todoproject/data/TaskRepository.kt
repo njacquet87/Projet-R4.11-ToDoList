@@ -2,6 +2,11 @@ package com.example.todoproject.data
 
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Repository interface for managing tasks in the application.
+ * This interface defines methods for retrieving, inserting, updating,
+ * and deleting tasks.
+ */
 interface TaskRepository {
 
     fun getAllTasks(): Flow<List<TaskEntity>>

@@ -8,6 +8,11 @@ import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Data Access Object (DAO) for managing tasks in the Room database.
+ * This interface defines methods for inserting, updating, deleting,
+ * and querying tasks from the database.
+ */
 @Dao
 interface TaskDao {
 

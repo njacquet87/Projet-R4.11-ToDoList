@@ -2,6 +2,11 @@ package com.example.todoproject.data
 
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Repository implementation for managing tasks using Room database.
+ * This class provides methods to perform operations on tasks
+ * and retrieve tasks in various ways (all tasks, by ID, sorted by status).
+ */
 class OfflineTaskRepository(private val taskDao: TaskDao) : TaskRepository {
     override fun getAllTasks(): Flow<List<TaskEntity>> = taskDao.getAllTasks()
 

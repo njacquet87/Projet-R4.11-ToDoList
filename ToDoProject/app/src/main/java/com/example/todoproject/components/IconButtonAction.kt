@@ -16,7 +16,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 @Composable
 fun IconButtonAction(imageVector: ImageVector, contentDescripton: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
     IconButton(onClick = onClick) {
-        Icon(imageVector, contentDescripton,
-            modifier)
+        Icon(imageVector, contentDescripton, modifier)
     }
 }
