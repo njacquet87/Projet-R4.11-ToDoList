@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 class OfflineTaskRepository(private val taskDao: TaskDao) : TaskRepository {
     override fun getAllTasks(): Flow<List<TaskEntity>> = taskDao.getAllTasks()
 
-    override fun getTaskById(id: Int): Flow<TaskEntity> = taskDao.getTaskById(id)
+    override fun getTaskById(id: Int): Flow<TaskEntity?> = taskDao.getTaskById(id)
 
     override fun getTasksSortedByStatus(): Flow<List<TaskEntity>> = taskDao.getTasksSortedByStatus()
 

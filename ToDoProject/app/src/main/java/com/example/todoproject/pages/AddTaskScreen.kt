@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -28,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.todoproject.ViewModel.TaskViewModel
 import com.example.todoproject.components.AppTextField
@@ -60,9 +64,13 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
             Text(text = "Ajouter une tâche")
         }
 
+        // The verticalScroll modifier is used to make the column scrollable
+        // when the content length is greater than the height of the column.
         Column(Modifier.width(250.dp).height(500.dp).clip(RoundedCornerShape(14.dp))
             .background(Color.Gray).border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))
-            .padding(16.dp)) {
+            .padding(16.dp).verticalScroll(rememberScrollState())) {
+
+            Text(text = "Les champs avec * sont obligatoires", fontSize = 10.sp)
 
             var title by remember { mutableStateOf("") }
 
@@ -81,7 +89,7 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 Button(onClick = {addTask(viewModel, title, description, selectedDate, navController)},
                     colors = ButtonDefaults.buttonColors(contentColor = Color.Black, containerColor = Color.LightGray),
-                    enabled = areAllInputNotBlank(title, description, selectedDate)) {
+                    enabled = areAllInputNotBlank(title, description)) {
                     Text(text = "Valider", color = Color.Black)
                 }
             }
@@ -92,13 +100,13 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
 
 /**
  * Check if all the inputs are not blank to enable the "Valider" button
+ * The date is not verified because it can be null
  * @param title the title of the task
  * @param description the description of the task
- * @param selectedDate the date of the task
  * @return true if all the inputs are not blank, false otherwise
  */
-fun areAllInputNotBlank(title: String, description: String, selectedDate: LocalDate?): Boolean {
-    return title.isNotBlank() && description.isNotBlank() && selectedDate.toString().isNotBlank()
+fun areAllInputNotBlank(title: String, description: String): Boolean {
+    return title.isNotBlank() && description.isNotBlank()
 }
 
 /**

@@ -39,8 +39,7 @@ import androidx.compose.runtime.collectAsState
 @Composable
 fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId : Int) {
 
-    val taskState = viewModel.getTaskById(taskId).collectAsState(initial = null)
-    val task = taskState.value
+    val task = viewModel.getTaskById(taskId).collectAsState(initial = null).value
 
     // header
     Header()
@@ -78,13 +77,13 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.Center) {
 
                     // title
-                    TaskDetail(task, "Titre : ", task.title)
+                    TaskDetail("Titre : ", task.title)
 
                     // description
-                    TaskDetail(task, "Description : ", task.description)
+                    TaskDetail("Description : ", task.description)
 
                     // date
-                    TaskDetail(task, "Date : ", task.date)
+                    TaskDetail("Date : ", task.date)
 
                     // TODO: add status and button to change the status of the task
                 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todoproject.data.TaskEntity
 import com.example.todoproject.data.TaskRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -23,10 +24,8 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
         emptyList()
     )
 
-    fun getTaskById(id: Int): StateFlow<TaskEntity>{
-        return repository.getTaskById(id).stateIn(viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            TaskEntity(title = "", description = "", date = "", status = ""))
+    fun getTaskById(id: Int): Flow<TaskEntity?> {
+        return repository.getTaskById(id)
     }
 
     fun addTask(title: String, description: String, date: String) {
@@ -42,4 +41,3 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
         }
     }
 }
-

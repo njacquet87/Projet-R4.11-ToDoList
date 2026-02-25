@@ -18,16 +18,22 @@ import com.example.todoproject.data.TaskEntity
 /**
  * Reusable function to display a title and a detail.
  * Ex : title = "Description" and text = "task.description"
- * @param task the task to display
  * @param title the title of the detail
  * @param text the text to display in the detail
  */
 @Composable
-fun TaskDetail(task: TaskEntity, title: String, text: String) {
+fun TaskDetail(title: String, text: String) {
     Text(text = title, fontSize = 20.sp)
-    Text(text = text, fontSize = 25.sp, modifier = Modifier
-        .clip(RoundedCornerShape(10.dp)).background(color = Color.LightGray)
-        .padding(16.dp, 10.dp, 16.dp, 10.dp))
+
+    if (text != "null") {
+        Text(text = text, fontSize = 25.sp, modifier = Modifier
+            .clip(RoundedCornerShape(10.dp)).background(color = Color.LightGray)
+            .padding(16.dp, 10.dp, 16.dp, 10.dp))
+    } else {
+        Text(text = "Aucune information disponible pour ce champ", fontSize = 13.sp, modifier = Modifier
+            .clip(RoundedCornerShape(10.dp)).background(color = Color.LightGray)
+            .padding(16.dp, 10.dp, 16.dp, 10.dp))
+    }
 
     Spacer(modifier = Modifier.height(16.dp))
 }
