@@ -28,13 +28,14 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
         return repository.getTaskById(id)
     }
 
-    fun addTask(title: String, description: String, date: String) {
+    fun addTask(title: String, description: String, date: String, hours: String) {
         viewModelScope.launch {
             repository.insertTask(
                 TaskEntity(
                     title = title,
                     description = description,
                     date = date,
+                    hours = hours,
                     status = "En cours"
                 )
             )

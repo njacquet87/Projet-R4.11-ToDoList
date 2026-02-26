@@ -28,6 +28,9 @@ data class TaskEntity(
     @ColumnInfo(name = "date")
     val date: String,
 
+    @ColumnInfo(name = "hours")
+    val hours: String,
+
     @ColumnInfo(name = "status")
     val status: String
 )

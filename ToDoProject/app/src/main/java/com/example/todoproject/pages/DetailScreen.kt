@@ -11,14 +11,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -29,6 +32,7 @@ import com.example.todoproject.components.Header
 import com.example.todoproject.components.IconButtonAction
 import com.example.todoproject.components.TaskDetail
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 
 /**
  * Display the details of a task
@@ -56,8 +60,11 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
             Text(text = "Detail de la tâche")
         }
 
+        // The verticalScroll modifier is used to make the column scrollable
+        // when the content length is greater than the height of the column.
         Column(Modifier.width(250.dp).height(500.dp).clip(RoundedCornerShape(14.dp))
-                .background(Color.Gray).border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))) {
+            .background(Color.Gray).border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))
+            .verticalScroll(rememberScrollState())) {
 
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
@@ -74,7 +81,8 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
             // Task details
 
             if (task != null) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.Center) {
+                Column(modifier = Modifier.padding(16.dp).fillMaxWidth(), verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally) {
 
                     // title
                     TaskDetail("Titre : ", task.title)
@@ -85,7 +93,14 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                     // date
                     TaskDetail("Date : ", task.date)
 
-                    // TODO: add status and button to change the status of the task
+                    // hours
+                    TaskDetail("Heure : ", task.hours)
+
+                    Button(onClick = {/* TODO implement changing status */ navController.popBackStack()},
+                        colors = ButtonDefaults.buttonColors(contentColor = Color.Black,
+                            containerColor = Color(0, 100, 0, 255))) {
+                        Text(text = "Finir la tâche")
+                    }
                 }
             } else {
                 Row(

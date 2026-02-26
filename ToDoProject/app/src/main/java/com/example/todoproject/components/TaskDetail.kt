@@ -17,6 +17,7 @@ import com.example.todoproject.data.TaskEntity
 
 /**
  * Reusable function to display a title and a detail.
+ * Verify if the text is null or empty to display a message instead of the text.
  * Ex : title = "Description" and text = "task.description"
  * @param title the title of the detail
  * @param text the text to display in the detail
@@ -25,8 +26,8 @@ import com.example.todoproject.data.TaskEntity
 fun TaskDetail(title: String, text: String) {
     Text(text = title, fontSize = 20.sp)
 
-    if (text != "null") {
-        Text(text = text, fontSize = 25.sp, modifier = Modifier
+    if (text != "null" || text.isEmpty()) {
+        Text(text = text, fontSize = 20.sp, modifier = Modifier
             .clip(RoundedCornerShape(10.dp)).background(color = Color.LightGray)
             .padding(16.dp, 10.dp, 16.dp, 10.dp))
     } else {

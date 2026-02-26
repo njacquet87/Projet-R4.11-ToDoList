@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -19,8 +18,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,13 +39,54 @@ import com.example.todoproject.components.AppTextField
 import com.example.todoproject.components.DateInput
 import com.example.todoproject.components.Header
 import com.example.todoproject.components.IconButtonAction
+import com.example.todoproject.components.TimeSelectInput
 import java.time.LocalDate
+
+/**
+ * Check if all the inputs are not blank to enable the "Valider" button
+ * The date is not verified because it can be null
+ * @param title the title of the task
+ * @param description the description of the task
+ * @return true if all the inputs are not blank, false otherwise
+ */
+fun areAllInputNotBlank(title: String, description: String): Boolean {
+    return title.isNotBlank() && description.isNotBlank()
+}
+
+/**
+ * Convert a TimePickerState to a string in the format "hour:minute"
+ * @param time the TimePickerState to convert
+ * @return the string representation of the time in the format "hour:minute"
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+fun timeToString(time: TimePickerState?): String {
+    return if (time != null) {
+        "${time.hour}:${time.minute}"
+    } else {
+        "null"
+    }
+}
+
+/**
+ * Add a task to the list of tasks in the TaskViewModel and navigate back to the HomeScreen
+ * @param viewModel the TaskViewModel to manage the tasks data
+ * @param title the title of the task
+ * @param description the description of the task
+ * @param date the date of the task
+ * @param navController the navController to navigate between screens
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+fun addTask(viewModel: TaskViewModel, title: String, description: String, date: LocalDate?, hours: TimePickerState?, navController: NavController) {
+    viewModel.addTask(title, description, date.toString(), timeToString(hours))
+    navController.popBackStack()
+}
 
 /**
  * Display the screen to add a task
  * @param navController the navController to navigate between screens
  * @param viewModel the TaskViewModel to manage the tasks data
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
 
@@ -86,8 +128,23 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
 
             DateInput(label = "Date de la tâche", selectedDate = selectedDate, onDateSelected = { selectedDate = it })
 
+            Text(text = "Heure de fin de la tache", style = MaterialTheme.typography.labelLarge)
+
+            var time: TimePickerState? by remember { mutableStateOf(null) }
+
+            TimeSelectInput(onConfirm = { newTime -> time = newTime }, onDismiss = { time = null })
+
+            Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
+                .background(Color.LightGray, RoundedCornerShape(8.dp)).padding(8.dp)) {
+                if (time != null) {
+                    Text(text = time.toString())
+                } else {
+                    Text(text = "Aucune heure sélectionnée", fontSize = 13.sp)
+                }
+            }
+
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                Button(onClick = {addTask(viewModel, title, description, selectedDate, navController)},
+                Button(onClick = {addTask(viewModel, title, description, selectedDate, time, navController)},
                     colors = ButtonDefaults.buttonColors(contentColor = Color.Black, containerColor = Color.LightGray),
                     enabled = areAllInputNotBlank(title, description)) {
                     Text(text = "Valider", color = Color.Black)
@@ -96,28 +153,4 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
 
         }
     }
-}
-
-/**
- * Check if all the inputs are not blank to enable the "Valider" button
- * The date is not verified because it can be null
- * @param title the title of the task
- * @param description the description of the task
- * @return true if all the inputs are not blank, false otherwise
- */
-fun areAllInputNotBlank(title: String, description: String): Boolean {
-    return title.isNotBlank() && description.isNotBlank()
-}
-
-/**
- * Add a task to the list of tasks in the TaskViewModel and navigate back to the HomeScreen
- * @param viewModel the TaskViewModel to manage the tasks data
- * @param title the title of the task
- * @param description the description of the task
- * @param date the date of the task
- * @param navController the navController to navigate between screens
- */
-fun addTask(viewModel: TaskViewModel, title: String, description: String, date: LocalDate?, navController: NavController) {
-    viewModel.addTask(title, description, date.toString())
-    navController.popBackStack()
 }
