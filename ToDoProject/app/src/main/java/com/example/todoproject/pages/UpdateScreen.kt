@@ -91,7 +91,7 @@ fun timeToTimePickerState(time: String?): TimePickerState? {
  */
 @Composable
 fun isTimeSelectEnabled(selectedDate: LocalDate?, task: TaskEntity): Boolean {
-    return selectedDate != null || task.date == "null" || task.hours != "null"
+    return selectedDate != null || task.date != "null" || task.hours != "null"
 }
 
 /**
@@ -109,7 +109,7 @@ fun isTimeSelectEnabled(selectedDate: LocalDate?, task: TaskEntity): Boolean {
 fun updateTask(viewModel: TaskViewModel, title: String, description: String, date: LocalDate?,
                hours: TimePickerState?, status: String, taskId: Int, navController: NavController) {
     viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), status)
-    navController.popBackStack()
+    navController.navigate("detail/${taskId}")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -179,10 +179,10 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                     Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
                             .background(Color.LightGray, RoundedCornerShape(8.dp)).padding(8.dp)) {
                         if (selectedDate != null) {
-                            Text(text = selectedDate.toString())
+                            Text(text = "Date de fin de tache : ${selectedDate.toString()}")
                         } else {
                             if (task.date != "null") {
-                                Text(text = task.date)
+                                Text(text = "Date de fin de tache : ${task.date}")
                             } else {
                                 Text(text = "Aucune date sélectionnée", fontSize = 13.sp)
                             }
@@ -195,10 +195,10 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                             .background(Color.LightGray, RoundedCornerShape(8.dp)).padding(8.dp)) {
                         if (time != null) {
                             // the !! operator are used to assert that the time variable is not null
-                            Text(text = "${time!!.hour}:${time!!.minute}")
+                            Text(text = "Heure de fin de tache : ${time!!.hour}:${time!!.minute}")
                         } else {
                             if (task.hours != "null") {
-                                Text(text = task.hours)
+                                Text(text = "Heure de fin de tache : ${task.hours}")
                             } else {
                                 Text(text = "Aucune heure sélectionnée", fontSize = 13.sp)
                             }

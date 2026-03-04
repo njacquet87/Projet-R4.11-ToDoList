@@ -100,7 +100,7 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                     // hours
                     TaskDetail("Heure : ", task.hours)
 
-                    Button(onClick = {/* TODO implement changing status */ navController.popBackStack()},
+                    Button(onClick = {/* TODO implement changing status */ navController.navigate("home")},
                         colors = ButtonDefaults.buttonColors(contentColor = Color.Black,
                             containerColor = Color(0, 100, 0, 255))) {
                         Text(text = "Finir la tâche")

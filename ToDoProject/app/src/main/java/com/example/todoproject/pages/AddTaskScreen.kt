@@ -82,7 +82,7 @@ fun timeToString(time: TimePickerState?): String {
 @OptIn(ExperimentalMaterial3Api::class)
 fun addTask(viewModel: TaskViewModel, title: String, description: String, date: LocalDate?, hours: TimePickerState?, navController: NavController) {
     viewModel.addTask(title, description, date.toString(), timeToString(hours))
-    navController.popBackStack()
+    navController.navigate("home")
 }
 
 /**
@@ -153,11 +153,7 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
                 Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
                         .background(Color.LightGray, RoundedCornerShape(8.dp)).padding(8.dp)) {
                     if (selectedDate != null) {
-                        // This formatter is used to display the date in the format "dd/mm/yyyy"
-                        val date = selectedDate
-                        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-                        val formatDate = date?.format(formatter)
-                        Text(text = formatDate.toString())
+                        Text(text = "Date de fin de tache : ${selectedDate.toString()}")
                     } else {
                         Text(text = "Aucune date sélectionnée", fontSize = 13.sp)
                     }
@@ -169,7 +165,7 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
                         .background(Color.LightGray, RoundedCornerShape(8.dp)).padding(8.dp)) {
                     if (time != null) {
                         // the !! operator are used to assert that the time variable is not null
-                        Text(text = "${time!!.hour}:${time!!.minute}")
+                        Text(text = "Heure de fin de tache : ${time!!.hour}:${time!!.minute}")
                     } else {
                         Text(text = "Aucune heure sélectionnée", fontSize = 13.sp)
                     }
