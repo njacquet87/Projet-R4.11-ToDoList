@@ -83,6 +83,35 @@ fun timeToTimePickerState(time: String?): TimePickerState? {
     }
 }
 
+/**
+ * Check if the time selection should be enabled based on the selected date and the task's date and hours
+ * @param selectedDate the currently selected date, or null if no date is selected
+ * @param task the task for which to check the time selection
+ * @return true if the time selection should be enabled, false otherwise
+ */
+@Composable
+fun isTimeSelectEnabled(selectedDate: LocalDate?, task: TaskEntity): Boolean {
+    return selectedDate != null || task.date == "null" || task.hours != "null"
+}
+
+/**
+ * Update a task in the TaskViewModel and navigate back to the HomeScreen
+ * @param viewModel the TaskViewModel to manage the tasks data
+ * @param title the title of the task
+ * @param description the description of the task
+ * @param date the date of the task
+ * @param hours the hours of the task
+ * @param status the status of the task
+ * @param taskId the id of the task to update
+ * @param navController the navController to navigate between screens
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+fun updateTask(viewModel: TaskViewModel, title: String, description: String, date: LocalDate?,
+               hours: TimePickerState?, status: String, taskId: Int, navController: NavController) {
+    viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), status)
+    navController.popBackStack()
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId : Int) {
@@ -113,9 +142,8 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
             // The verticalScroll modifier is used to make the column scrollable
             // when the content length is greater than the height of the column.
             Column(Modifier.width(300.dp).height(550.dp).clip(RoundedCornerShape(14.dp))
-                    .background(Color.Gray)
-                    .border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp)).padding(16.dp)
-                    .verticalScroll(rememberScrollState())) {
+                    .background(Color.Gray).border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))
+                    .padding(16.dp).verticalScroll(rememberScrollState())) {
 
                 Text(text = "Les champs avec * sont obligatoires", fontSize = 10.sp)
 
@@ -135,12 +163,8 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                     Text(text = "Affihcer la sélection", fontSize = 10.sp)
 
                     Checkbox(checked = isChecked, onCheckedChange = { isChecked = it },
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = Color.LightGray,
-                            uncheckedColor = Color.LightGray, checkmarkColor = Color.Black
-                        )
-                    )
-                }
+                        colors = CheckboxDefaults.colors(checkedColor = Color.LightGray,
+                            uncheckedColor = Color.LightGray, checkmarkColor = Color.Black)) }
 
                 if (isChecked) {
 
@@ -148,8 +172,8 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
 
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
                         DateInput(onDateSelected = { newDate -> selectedDate = newDate })
-                        TimeSelectInput(onConfirm = { newTime -> time = newTime }, enabled = isTimeSelectEnabled(selectedDate, task)
-                        )
+                        TimeSelectInput(onConfirm = { newTime -> time = newTime },
+                            enabled = isTimeSelectEnabled(selectedDate, task))
                     }
 
                     Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
@@ -182,10 +206,10 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                     }
                 }
 
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    Button(onClick = {},
-                        colors = ButtonDefaults.buttonColors(
-                            contentColor = Color.Black, containerColor = Color.LightGray,
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center) {
+                    Button(onClick = {updateTask(viewModel, title, description, selectedDate, time, task.status, taskId, navController)},
+                        colors = ButtonDefaults.buttonColors(contentColor = Color.Black, containerColor = Color.LightGray,
                             disabledContainerColor = Color(170, 0, 0, 255)),
                         enabled = areAllInputNotBlank(title, description)) {
                         Text(text = "Modifier", color = Color.Black)
@@ -203,9 +227,3 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
         }
     }
 }
-
-@Composable
-private fun isTimeSelectEnabled(
-    selectedDate: LocalDate?,
-    task: TaskEntity
-): Boolean = selectedDate != null || task.date == "null" || task.hours != "null"
