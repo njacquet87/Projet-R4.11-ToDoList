@@ -15,51 +15,36 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import java.time.LocalDate
 import java.util.Calendar
 
 /**
  * Reusable function to display a time input field with a time picker dialog
  * @param onConfirm the action to perform when a time is selected and confirmed
- * @param onDismiss the action to perform when the time picker dialog is dismissed
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimeSelectInput(onConfirm: (TimePickerState) -> Unit, onDismiss: () -> Unit) {
+fun TimeSelectInput(onConfirm: (TimePickerState) -> Unit, date: LocalDate?) {
 
     val currentTime = Calendar.getInstance()
 
-    val timePickerState = rememberTimePickerState(
-        initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
-        initialMinute = currentTime.get(Calendar.MINUTE),
-        is24Hour = true,
-    )
+    val timePickerState = rememberTimePickerState(initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
+        initialMinute = currentTime.get(Calendar.MINUTE), is24Hour = true,)
 
     var showTimePicker by remember { mutableStateOf(false) }
 
     IconButtonAction(imageVector = Icons.Filled.AccessTime,
-        contentDescripton = "Sélectionner une heure", onClick = { showTimePicker = true })
+        contentDescripton = "Sélectionner une heure", onClick = { showTimePicker = true }, enabled = date != null)
 
     if (showTimePicker) {
-        AlertDialog(
-            onDismissRequest = {
-                onDismiss()
-                showTimePicker = false
-            },
-            title = { Text("Sélectionner une heure") },
+        AlertDialog(onDismissRequest = { showTimePicker = false }, title = { Text("Sélectionner une heure") },
             text = { TimeInput(state = timePickerState) },
-            confirmButton = {
-                Button(onClick = {
-                    onConfirm(timePickerState)
-                    showTimePicker = false
-                }) {
+            confirmButton = { Button(onClick = { onConfirm(timePickerState)
+                    showTimePicker = false }) {
                     Text("OK")
                 }
             },
-            dismissButton = {
-                Button(onClick = {
-                    onDismiss()
-                    showTimePicker = false
-                }) {
+            dismissButton = { Button(onClick = { showTimePicker = false }) {
                     Text("Annuler")
                 }
             }

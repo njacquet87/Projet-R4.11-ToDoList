@@ -12,10 +12,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
  * @param contentDescripton the description of the icon
  * @param onClick the action to perform when the button is clicked
  * @param modifier the modifier to apply to the icon. Default value is an empty Modifier
+ * @param enabled whether the button is enabled or not. Default value is true
  */
 @Composable
-fun IconButtonAction(imageVector: ImageVector, contentDescripton: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    IconButton(onClick = onClick) {
+fun IconButtonAction(imageVector: ImageVector, contentDescripton: String, onClick: () -> Unit,
+                     modifier: Modifier = Modifier, enabled: Boolean = true) {
+    IconButton(onClick = onClick, enabled = enabled) {
         Icon(imageVector, contentDescripton, modifier)
     }
 }

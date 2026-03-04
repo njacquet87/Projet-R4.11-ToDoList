@@ -33,6 +33,7 @@ import com.example.todoproject.components.IconButtonAction
 import com.example.todoproject.components.TaskDetail
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
+import java.time.format.DateTimeFormatter
 
 /**
  * Display the details of a task
@@ -62,7 +63,7 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
 
         // The verticalScroll modifier is used to make the column scrollable
         // when the content length is greater than the height of the column.
-        Column(Modifier.width(250.dp).height(500.dp).clip(RoundedCornerShape(14.dp))
+        Column(Modifier.width(300.dp).height(550.dp).clip(RoundedCornerShape(14.dp))
             .background(Color.Gray).border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))
             .verticalScroll(rememberScrollState())) {
 
@@ -91,7 +92,10 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                     TaskDetail("Description : ", task.description)
 
                     // date
-                    TaskDetail("Date : ", task.date)
+                    val date = task.date
+                    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+                    TaskDetail("Date : ", date.format(formatter))
 
                     // hours
                     TaskDetail("Heure : ", task.hours)

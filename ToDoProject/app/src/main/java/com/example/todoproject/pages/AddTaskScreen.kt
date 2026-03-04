@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +19,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -41,6 +44,7 @@ import com.example.todoproject.components.Header
 import com.example.todoproject.components.IconButtonAction
 import com.example.todoproject.components.TimeSelectInput
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 /**
  * Check if all the inputs are not blank to enable the "Valider" button
@@ -81,6 +85,10 @@ fun addTask(viewModel: TaskViewModel, title: String, description: String, date: 
     navController.popBackStack()
 }
 
+fun isDateSelected(date: LocalDate?): Boolean {
+    return date != null
+}
+
 /**
  * Display the screen to add a task
  * @param navController the navController to navigate between screens
@@ -89,6 +97,11 @@ fun addTask(viewModel: TaskViewModel, title: String, description: String, date: 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
+
+    var isChecked by remember { mutableStateOf(false) }
+
+    var selectedDate: LocalDate? by remember { mutableStateOf(null) }
+    var time: TimePickerState? by remember { mutableStateOf(null) }
 
     // header
     Header()
@@ -108,7 +121,7 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
 
         // The verticalScroll modifier is used to make the column scrollable
         // when the content length is greater than the height of the column.
-        Column(Modifier.width(250.dp).height(500.dp).clip(RoundedCornerShape(14.dp))
+        Column(Modifier.width(300.dp).height(550.dp).clip(RoundedCornerShape(14.dp))
             .background(Color.Gray).border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))
             .padding(16.dp).verticalScroll(rememberScrollState())) {
 
@@ -122,30 +135,56 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
 
             AppTextField(value = description, onValueChange = { newText -> description = newText }, inputTitle = "Description *", label = "Description de la tache")
 
-            Text(text = "Date de fin de la tache", style = MaterialTheme.typography.labelLarge)
+            Text(text = "Date et heure de fin de la tache", style = MaterialTheme.typography.labelLarge)
 
-            var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Affihcer la sélection", fontSize = 10.sp)
 
-            DateInput(label = "Date de la tâche", selectedDate = selectedDate, onDateSelected = { selectedDate = it })
+                Checkbox(checked = isChecked, onCheckedChange = { isChecked = it },
+                    colors = CheckboxDefaults.colors(checkedColor = Color.LightGray,
+                        uncheckedColor = Color.LightGray, checkmarkColor = Color.Black)) }
 
-            Text(text = "Heure de fin de la tache", style = MaterialTheme.typography.labelLarge)
+            if (isChecked) {
 
-            var time: TimePickerState? by remember { mutableStateOf(null) }
+                Text(text = "Cliquez sur les icones pour sélectionner la date et l'heure", fontSize = 10.sp)
 
-            TimeSelectInput(onConfirm = { newTime -> time = newTime }, onDismiss = { time = null })
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround) {
+                    DateInput(onDateSelected = { newDate -> selectedDate = newDate })
+                    TimeSelectInput(onConfirm = { newTime -> time = newTime }, date = selectedDate)
+                }
 
-            Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
-                .background(Color.LightGray, RoundedCornerShape(8.dp)).padding(8.dp)) {
-                if (time != null) {
-                    Text(text = time.toString())
-                } else {
-                    Text(text = "Aucune heure sélectionnée", fontSize = 13.sp)
+                Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
+                        .background(Color.LightGray, RoundedCornerShape(8.dp)).padding(8.dp)) {
+                    if (selectedDate != null) {
+                        // This formatter is used to display the date in the format "dd/mm/yyyy"
+                        val date = selectedDate
+                        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                        val formatDate = date?.format(formatter)
+                        Text(text = formatDate.toString())
+                    } else {
+                        Text(text = "Aucune date sélectionnée", fontSize = 13.sp)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
+                        .background(Color.LightGray, RoundedCornerShape(8.dp)).padding(8.dp)) {
+                    if (time != null) {
+                        // the !! operator are used to assert that the time variable is not null
+                        Text(text = "${time!!.hour}:${time!!.minute}")
+                    } else {
+                        Text(text = "Aucune heure sélectionnée", fontSize = 13.sp)
+                    }
                 }
             }
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 Button(onClick = {addTask(viewModel, title, description, selectedDate, time, navController)},
-                    colors = ButtonDefaults.buttonColors(contentColor = Color.Black, containerColor = Color.LightGray),
+                    colors = ButtonDefaults.buttonColors(contentColor = Color.Black, containerColor = Color.LightGray,
+                        disabledContainerColor = Color(170, 0, 0, 255)
+                    ),
                     enabled = areAllInputNotBlank(title, description)) {
                     Text(text = "Valider", color = Color.Black)
                 }

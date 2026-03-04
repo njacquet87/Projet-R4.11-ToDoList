@@ -1,5 +1,6 @@
 package com.example.todoproject.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +22,9 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun AddTask(onClick: () -> Unit) {
+
+    Spacer(modifier = Modifier.height(16.dp))
+
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
 
         IconButtonAction(Icons.Filled.AddCircleOutline, "ajout d'une tache",

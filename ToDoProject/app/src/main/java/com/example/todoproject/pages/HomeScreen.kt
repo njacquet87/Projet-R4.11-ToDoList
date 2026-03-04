@@ -54,7 +54,7 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
         // List of tasks.
         // The verticalScroll modifier is used to make the column scrollable
         // when the content length is greater than the height of the column.
-        Column(Modifier.width(250.dp).height(500.dp).clip(RoundedCornerShape(14.dp))
+        Column(Modifier.width(300.dp).height(550.dp).clip(RoundedCornerShape(14.dp))
             .background(Color.Gray).border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))
             .verticalScroll(rememberScrollState())) {
 
