@@ -24,7 +24,7 @@ import java.util.Calendar
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimeSelectInput(onConfirm: (TimePickerState) -> Unit, date: LocalDate?) {
+fun TimeSelectInput(onConfirm: (TimePickerState) -> Unit, enabled: Boolean = true) {
 
     val currentTime = Calendar.getInstance()
 
@@ -34,7 +34,7 @@ fun TimeSelectInput(onConfirm: (TimePickerState) -> Unit, date: LocalDate?) {
     var showTimePicker by remember { mutableStateOf(false) }
 
     IconButtonAction(imageVector = Icons.Filled.AccessTime,
-        contentDescripton = "Sélectionner une heure", onClick = { showTimePicker = true }, enabled = date != null)
+        contentDescripton = "Sélectionner une heure", onClick = { showTimePicker = true }, enabled = enabled)
 
     if (showTimePicker) {
         AlertDialog(onDismissRequest = { showTimePicker = false }, title = { Text("Sélectionner une heure") },

@@ -10,6 +10,7 @@ import com.example.todoproject.ViewModel.TaskViewModel
 import com.example.todoproject.pages.AddTaskScreen
 import com.example.todoproject.pages.HomeScreen
 import com.example.todoproject.pages.DetailScreen
+import com.example.todoproject.pages.UpdateScreen
 
 private const val HOME = "home"
 
@@ -38,6 +39,19 @@ fun AppNavigation(viewModel: TaskViewModel) {
 
         composable(route = "add") {
             AddTaskScreen(navController, viewModel)
+        }
+
+        composable(route = "update/{taskId}",
+            arguments = listOf(
+                navArgument("taskId") {
+                    type = NavType.IntType
+                    defaultValue = 0
+                }
+            )) {
+            // get taskId to find the corresponding task in the mockTasks list in UpdateScreen
+            backStackEntry -> val taskId = backStackEntry.arguments?.getInt("taskId") ?: 0
+
+            UpdateScreen(navController, viewModel, taskId)
         }
     }
 }

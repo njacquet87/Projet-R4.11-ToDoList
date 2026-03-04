@@ -72,7 +72,7 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
 
                 // Update
                 IconButtonAction(Icons.Filled.Edit, "Modification de la tache",
-                    onClick = {/* TODO */})
+                    onClick = { navController.navigate("update/${taskId}") })
 
                 // Delete
                 IconButtonAction(Icons.Filled.Delete, "Suppression de la tache",

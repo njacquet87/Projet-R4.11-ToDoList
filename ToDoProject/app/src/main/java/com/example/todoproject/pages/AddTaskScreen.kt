@@ -85,10 +85,6 @@ fun addTask(viewModel: TaskViewModel, title: String, description: String, date: 
     navController.popBackStack()
 }
 
-fun isDateSelected(date: LocalDate?): Boolean {
-    return date != null
-}
-
 /**
  * Display the screen to add a task
  * @param navController the navController to navigate between screens
@@ -151,7 +147,7 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
                 Row(modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceAround) {
                     DateInput(onDateSelected = { newDate -> selectedDate = newDate })
-                    TimeSelectInput(onConfirm = { newTime -> time = newTime }, date = selectedDate)
+                    TimeSelectInput(onConfirm = { newTime -> time = newTime }, enabled = selectedDate != null)
                 }
 
                 Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))

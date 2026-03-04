@@ -70,7 +70,7 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
                 for (task in tasks) {
                     TaskItem(task, onDetailClick = { navController.navigate("detail/${task.id}") },
                         onDeleteClick = { /* TODO */ },
-                        onUpdateClick = { /* TODO */ })
+                        onUpdateClick = { navController.navigate("update/${task.id}") })
                 }
             }
         }
