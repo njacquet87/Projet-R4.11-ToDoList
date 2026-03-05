@@ -41,4 +41,25 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
             )
         }
     }
+
+    fun updateTask(id: Int, title: String, description: String, date: String, hours: String, status: String) {
+        viewModelScope.launch {
+            repository.updateTask(
+                TaskEntity(
+                    id = id,
+                    title = title,
+                    description = description,
+                    date = date,
+                    hours = hours,
+                    status = status
+                )
+            )
+        }
+    }
+
+    fun markTaskAsDone(id: Int?) {
+        viewModelScope.launch {
+            repository.markTaskAsDone(id)
+        }
+    }
 }

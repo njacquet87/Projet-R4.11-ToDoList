@@ -1,5 +1,6 @@
 package com.example.todoproject.pages
 
+import android.R
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,12 +21,19 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
 import com.example.todoproject.ViewModel.TaskViewModel
 import com.example.todoproject.components.Header
@@ -33,7 +41,16 @@ import com.example.todoproject.components.IconButtonAction
 import com.example.todoproject.components.TaskDetail
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
+import com.example.todoproject.data.TaskEntity
+import kotlinx.coroutines.delay
 import java.time.format.DateTimeFormatter
+
+
+fun markAsDone(viewModel: TaskViewModel, task: TaskEntity?) {
+    if (task != null && task.status != "Réalisé") {
+        viewModel.markTaskAsDone(task.id)
+    }
+}
 
 /**
  * Display the details of a task
@@ -45,6 +62,23 @@ import java.time.format.DateTimeFormatter
 fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId : Int) {
 
     val task = viewModel.getTaskById(taskId).collectAsState(initial = null).value
+    var showPopup by remember { mutableStateOf(false) }
+
+    if (showPopup) {
+        Popup(alignment = Alignment.Center, onDismissRequest = { showPopup = false }) {
+            Column(modifier = Modifier.fillMaxWidth().padding(10.dp).clip(RoundedCornerShape(10.dp))
+                .background(Color.Black).border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
+                .padding(10.dp)){
+                    Text(text = "Vous avez réalisé la tache !", color = Color.White, style = MaterialTheme.typography.headlineSmall)
+            }
+        }
+
+        LaunchedEffect(Unit) {
+            delay(2000)
+            showPopup = false
+            navController.navigate("home")
+        }
+    }
 
     // header
     Header()
@@ -72,7 +106,7 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
 
                 // Update
                 IconButtonAction(Icons.Filled.Edit, "Modification de la tache",
-                    onClick = {/* TODO */})
+                    onClick = { navController.navigate("update/${taskId}") })
 
                 // Delete
                 IconButtonAction(Icons.Filled.Delete, "Suppression de la tache",
@@ -100,15 +134,20 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                     // hours
                     TaskDetail("Heure : ", task.hours)
 
-                    Button(onClick = {/* TODO implement changing status */ navController.popBackStack()},
+                    Button(onClick = {
+                        markAsDone(viewModel, task)
+                        showPopup = true },
                         colors = ButtonDefaults.buttonColors(contentColor = Color.Black,
-                            containerColor = Color(0, 100, 0, 255))) {
-                        Text(text = "Finir la tâche")
+                            containerColor = Color(0, 100, 0, 255)), enabled = task.status != "Réalisé") {
+                        if (task.status != "Réalisé") {
+                            Text(text = "Finir la tâche")
+                        } else {
+                            Text(text = "Tâche terminée")
+                        }
                     }
                 }
             } else {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(10.dp)
+                Row(modifier = Modifier.fillMaxWidth().padding(10.dp)
                         .clip(RoundedCornerShape(10.dp)).background(Color.LightGray)
                         .border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
                         .padding(10.dp),
@@ -119,4 +158,3 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
         }
     }
 }
-

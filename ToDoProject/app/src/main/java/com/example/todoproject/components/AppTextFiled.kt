@@ -25,17 +25,19 @@ import androidx.compose.ui.unit.sp
  * @param label the label to display inside the TextField
  */
 @Composable
-fun AppTextField(value: String, onValueChange: (String) -> Unit, inputTitle: String, label: String) {
+fun AppTextField(value: String?, onValueChange: (String) -> Unit, inputTitle: String, label: String) {
     Text(text = inputTitle, style = MaterialTheme.typography.labelLarge)
 
-    TextField(value = value, onValueChange = onValueChange, label = { Text(label, fontSize = 12.sp) },
-        modifier = Modifier.fillMaxWidth().padding(16.dp),
-        colors = TextFieldDefaults.colors(focusedContainerColor = Color.LightGray, unfocusedContainerColor = Color.LightGray,
-            focusedLabelColor = Color.Black, unfocusedLabelColor = Color.Black,
-            focusedIndicatorColor = Color.Black, unfocusedIndicatorColor = Color.Black,
-            cursorColor = Color.Black, focusedTextColor = Color.Black,
-            unfocusedTextColor = Color.Black)
-    )
+    if (value != null) {
+        TextField(value = value, onValueChange = onValueChange, label = { Text(label, fontSize = 12.sp) },
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            colors = TextFieldDefaults.colors(focusedContainerColor = Color.LightGray, unfocusedContainerColor = Color.LightGray,
+                focusedLabelColor = Color.Black, unfocusedLabelColor = Color.Black,
+                focusedIndicatorColor = Color.Black, unfocusedIndicatorColor = Color.Black,
+                cursorColor = Color.Black, focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black)
+        )
+    }
 
     Spacer(modifier = Modifier.height(16.dp))
 }

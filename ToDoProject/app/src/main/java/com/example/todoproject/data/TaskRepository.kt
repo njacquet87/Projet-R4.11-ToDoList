@@ -15,6 +15,8 @@ interface TaskRepository {
 
     fun getTasksSortedByStatus(): Flow<List<TaskEntity>>
 
+    suspend fun markTaskAsDone(id: Int?)
+
     suspend fun insertTask(task: TaskEntity)
 
     suspend fun updateTask(task: TaskEntity)
