@@ -62,4 +62,8 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
             repository.markTaskAsDone(id)
         }
     }
+
+    fun getTasksSortedByStatus(status: String): Flow<List<TaskEntity>> {
+        return repository.getTasksSortedByStatus(status)
+    }
 }
