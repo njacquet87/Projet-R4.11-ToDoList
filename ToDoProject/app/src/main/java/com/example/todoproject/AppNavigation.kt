@@ -12,19 +12,25 @@ import com.example.todoproject.pages.HomeScreen
 import com.example.todoproject.pages.DetailScreen
 import com.example.todoproject.pages.UpdateScreen
 
-private const val HOME = "home"
+private const val HOME_ROUTE = "home"
+
+private const val DETAIL_ROUTE = "detail/{taskId}"
+
+private const val ADD_ROUTE = "add"
+
+private const val UPDATE_ROUTE = "update/{taskId}"
 
 @Composable
 fun AppNavigation(viewModel: TaskViewModel) {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = HOME) {
+    NavHost(navController = navController, startDestination = HOME_ROUTE) {
 
-        composable(route = "home") {
+        composable(route = HOME_ROUTE) {
             HomeScreen(navController, viewModel)
         }
 
-        composable(route = "detail/{taskId}",
+        composable(route = DETAIL_ROUTE,
             arguments = listOf(
                 navArgument("taskId") {
                     type = NavType.IntType
@@ -37,11 +43,11 @@ fun AppNavigation(viewModel: TaskViewModel) {
             DetailScreen(navController, viewModel, taskId)
         }
 
-        composable(route = "add") {
+        composable(route = ADD_ROUTE) {
             AddTaskScreen(navController, viewModel)
         }
 
-        composable(route = "update/{taskId}",
+        composable(route = UPDATE_ROUTE,
             arguments = listOf(
                 navArgument("taskId") {
                     type = NavType.IntType

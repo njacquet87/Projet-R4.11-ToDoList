@@ -56,4 +56,10 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
             )
         }
     }
+
+    fun markTaskAsDone(id: Int?) {
+        viewModelScope.launch {
+            repository.markTaskAsDone(id)
+        }
+    }
 }
