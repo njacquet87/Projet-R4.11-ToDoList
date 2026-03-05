@@ -63,7 +63,7 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
         }
     }
 
-    fun getTasksSortedByStatus(status: String): Flow<List<TaskEntity>> {
+    fun getTasksSortedByStatus(status: String): List<TaskEntity> {
         return repository.getTasksSortedByStatus(status)
     }
 }

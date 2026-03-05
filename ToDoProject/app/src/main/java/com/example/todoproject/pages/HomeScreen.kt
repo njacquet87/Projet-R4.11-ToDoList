@@ -1,5 +1,11 @@
 package com.example.todoproject.pages
 
+import android.Manifest
+import android.R
+import android.content.Context
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,6 +28,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,13 +38,61 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.navigation.NavController
 import com.example.todoproject.components.AddTask
 import com.example.todoproject.components.Header
 import com.example.todoproject.components.TaskItem
 import com.example.todoproject.ViewModel.TaskViewModel
+import com.example.todoproject.data.TaskEntity
+import kotlinx.coroutines.flow.Flow
+
+/**
+ * Function to send a notification to the user with the title and message provided as parameters.
+ * The notification is sent using the NotificationCompat library and requires the POST_NOTIFICATIONS permission.
+ * @param context the context of the application
+ * @param title the title of the notification
+ * @param message the message of the notification
+ */
+@RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+fun sendNotification(context: Context, title: String, message: String) {
+    val notification = NotificationCompat.Builder(context, "task_channel")
+        .setSmallIcon(R.drawable.ic_dialog_info)
+        .setContentTitle(title)
+        .setContentText(message)
+        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+        .build()
+
+    NotificationManagerCompat.from(context).notify(1, notification)
+}
+
+
+/**
+ * Function to request the POST_NOTIFICATIONS permission from the user.
+ * The permission is requested using the rememberLauncherForActivityResult and ActivityResultContracts.RequestPermission libraries.
+ * The function is called in the HomeScreen composable to ensure that the permission is requested when the user opens the app.
+ */
+@Composable
+fun RequestNotificationPermission() {
+
+    val context = LocalContext.current
+
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // permission accordée
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+    }
+}
 
 /**
  * Display the home screen with a header and a list of tasks.
@@ -45,9 +100,11 @@ import com.example.todoproject.ViewModel.TaskViewModel
  * @param navController the navController to navigate between screens
  * @param viewModel the TaskViewModel to manage the tasks data
  */
+@RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
 @Composable
 fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
 
+    RequestNotificationPermission()
     var expanded by remember { mutableStateOf(false) }
     var selectedFilter by remember { mutableStateOf("Toutes") }
 
@@ -55,13 +112,15 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
     // The when statement is used to filter the tasks based on the selected filter.
     val tasks by when (selectedFilter) {
         "Toutes" -> viewModel.tasks.collectAsState()
-        else -> viewModel.getTasksSortedByStatus(selectedFilter).collectAsState(initial = emptyList())
+        else -> (viewModel.getTasksSortedByStatus(selectedFilter) as Flow<List<TaskEntity>>).collectAsState(initial = emptyList())
     }
 
     val filterOptions = listOf("Toutes", "En cours", "Réalisé", "Dépassé")
 
     //header
     Header()
+
+    val context = LocalContext.current
 
     // body
     Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.Center,
@@ -113,6 +172,12 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
                     )
                 }
             }
+        }
+
+        Button(onClick = {sendNotification(context, "Rappel de tâche", "N'oubliez pas de réaliser vos tâches !")},
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(text = "test notification")
         }
     }
 }
