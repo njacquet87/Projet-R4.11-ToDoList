@@ -6,7 +6,6 @@ import com.example.todoproject.data.TaskEntity
 import com.example.todoproject.data.TaskRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -62,5 +61,11 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
 
     fun getTasksSortedByStatus(status: String): Flow<List<TaskEntity>> {
         return repository.getTasksSortedByStatus(status)
+    }
+
+    fun delete(task: TaskEntity) {
+        viewModelScope.launch {
+            repository.deleteTask(task)
+        }
     }
 }

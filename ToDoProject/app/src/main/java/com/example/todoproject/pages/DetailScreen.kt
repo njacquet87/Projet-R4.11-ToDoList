@@ -99,6 +99,7 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
     var showPopup by remember { mutableStateOf(false) }
     val context = LocalContext.current
     var showFireworks by remember { mutableStateOf(false) }
+    var showDeletePopUp by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -134,7 +135,7 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
 
                         // Delete
                         IconButtonAction(Icons.Filled.Delete, "Suppression de la tache",
-                            onClick = {/* TODO */ }, color = Color(170, 0, 0, 255))
+                            onClick = { showDeletePopUp= true }, color = Color(170, 0, 0, 255))
                     }
 
                     // Task details
@@ -212,6 +213,38 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                 showFireworks = false
                 showPopup = false
                 navController.navigate("home")
+            }
+        }
+
+        if (showDeletePopUp) {
+            Popup(alignment = Alignment.Center, onDismissRequest = {showDeletePopUp = false}) {
+                Column(modifier = Modifier.background(Color.White).clip(RoundedCornerShape(10.dp))
+                    .border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
+                    .padding(16.dp), verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(text = "Voulez-vous vraiment supprimer cette tâche ?")
+                    Row(modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly) {
+
+                        if (task != null) {
+                            Button(onClick = { showDeletePopUp = false }, colors = ButtonDefaults.buttonColors(
+                                contentColor = Color.Black,
+                                containerColor = Color.LightGray
+                            )) {
+                                Text(text = "Annuler")
+                            }
+                            Button(onClick = { showDeletePopUp = false
+                                deleteTask(viewModel, task)
+                                navController.navigate("home")},
+                                colors = ButtonDefaults.buttonColors(
+                                    contentColor = Color.Black,
+                                    containerColor = Color.LightGray
+                                )) {
+                                Text(text = "Supprimer")
+                            }
+                        }
+                    }
+                }
             }
         }
     }
