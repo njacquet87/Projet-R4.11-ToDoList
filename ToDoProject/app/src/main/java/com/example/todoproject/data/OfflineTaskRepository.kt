@@ -12,9 +12,11 @@ class OfflineTaskRepository(private val taskDao: TaskDao) : TaskRepository {
 
     override fun getTaskById(id: Int): Flow<TaskEntity?> = taskDao.getTaskById(id)
 
-    override fun getTasksSortedByStatus(): Flow<List<TaskEntity>> = taskDao.getTasksSortedByStatus()
+    override fun getTasksSortedByStatus(status: String): Flow<List<TaskEntity>> = taskDao.getTasksSortedByStatus(status)
 
     override suspend fun markTaskAsDone(id: Int?) = taskDao.markAsDone(id)
+
+    override suspend fun markTaskAsLate(id: Int?) = taskDao.marckAsLate(id)
 
     override suspend fun insertTask(task: TaskEntity) = taskDao.insert(task)
 

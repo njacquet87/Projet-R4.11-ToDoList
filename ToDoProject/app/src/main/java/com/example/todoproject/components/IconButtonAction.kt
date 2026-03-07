@@ -1,9 +1,11 @@
 package com.example.todoproject.components
 
+import android.R
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
@@ -16,8 +18,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
  */
 @Composable
 fun IconButtonAction(imageVector: ImageVector, contentDescripton: String, onClick: () -> Unit,
-                     modifier: Modifier = Modifier, enabled: Boolean = true) {
+                     modifier: Modifier = Modifier, enabled: Boolean = true, color: Color = Color.Black) {
     IconButton(onClick = onClick, enabled = enabled) {
-        Icon(imageVector, contentDescripton, modifier)
+        Icon(imageVector, contentDescripton, modifier, color)
     }
 }

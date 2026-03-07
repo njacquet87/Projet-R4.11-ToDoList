@@ -18,11 +18,8 @@ import kotlinx.coroutines.launch
  */
 class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
 
-    val tasks: StateFlow<List<TaskEntity>> = repository.getAllTasks().stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        emptyList()
-    )
+    val tasks: Flow<List<TaskEntity>> = repository.getAllTasks()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun getTaskById(id: Int): Flow<TaskEntity?> {
         return repository.getTaskById(id)
@@ -61,5 +58,9 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
         viewModelScope.launch {
             repository.markTaskAsDone(id)
         }
+    }
+
+    fun getTasksSortedByStatus(status: String): Flow<List<TaskEntity>> {
+        return repository.getTasksSortedByStatus(status)
     }
 }

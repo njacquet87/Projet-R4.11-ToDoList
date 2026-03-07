@@ -1,12 +1,18 @@
 package com.example.todoproject.pages
 
+import android.Manifest
 import android.R
+import android.content.Context
+import android.content.pm.PackageManager
+import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,11 +47,39 @@ import com.example.todoproject.components.IconButtonAction
 import com.example.todoproject.components.TaskDetail
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
+import com.example.todoproject.components.FireworksAnimation
 import com.example.todoproject.data.TaskEntity
 import kotlinx.coroutines.delay
 import java.time.format.DateTimeFormatter
+import kotlin.random.Random
 
 
+object NotificationHelper {
+
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+    fun showNotification(context: Context, title: String) {
+
+        val notification = NotificationCompat.Builder(context, "task_channel")
+            .setSmallIcon(R.drawable.ic_dialog_info)
+            .setContentTitle("Tâche Réalisé !")
+            .setContentText("Bravo ! Vous venez de réaliser la tâche : $title")
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .build()
+
+        NotificationManagerCompat.from(context)
+            .notify(Random.nextInt(), notification)
+    }
+}
+
+/**
+ * Mark a task as done by changing its status to "Réalisé"
+ * @param viewModel the TaskViewModel to manage the tasks data
+ * @param task the task to mark as done.
+ */
 fun markAsDone(viewModel: TaskViewModel, task: TaskEntity?) {
     if (task != null && task.status != "Réalisé") {
         viewModel.markTaskAsDone(task.id)
@@ -63,98 +97,123 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
 
     val task = viewModel.getTaskById(taskId).collectAsState(initial = null).value
     var showPopup by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    var showFireworks by remember { mutableStateOf(false) }
 
-    if (showPopup) {
-        Popup(alignment = Alignment.Center, onDismissRequest = { showPopup = false }) {
-            Column(modifier = Modifier.fillMaxWidth().padding(10.dp).clip(RoundedCornerShape(10.dp))
-                .background(Color.Black).border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
-                .padding(10.dp)){
-                    Text(text = "Vous avez réalisé la tache !", color = Color.White, style = MaterialTheme.typography.headlineSmall)
-            }
-        }
+    Box(modifier = Modifier.fillMaxSize()) {
 
-        LaunchedEffect(Unit) {
-            delay(2000)
-            showPopup = false
-            navController.navigate("home")
-        }
-    }
+        Column(modifier = Modifier.fillMaxSize()) {
+            // header
+            Header()
 
-    // header
-    Header()
+            Column(Modifier.fillMaxSize().padding(16.dp),
+                verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
 
-    Column(Modifier.fillMaxSize().padding(16.dp),
-        verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
 
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    // Back Arrow to go back to the HomeScreen
+                    IconButtonAction(Icons.AutoMirrored.Filled.ArrowBack, "Retour",
+                        onClick = { navController.popBackStack() })
 
-            // Back Arrow to go back to the HomeScreen
-            IconButtonAction(Icons.AutoMirrored.Filled.ArrowBack, "Retour",
-                onClick = { navController.popBackStack() })
+                    Text(text = "Detail de la tâche")
+                }
 
-            Text(text = "Detail de la tâche")
-        }
+                // The verticalScroll modifier is used to make the column scrollable
+                // when the content length is greater than the height of the column.
+                Column(Modifier.width(300.dp).height(550.dp).clip(RoundedCornerShape(14.dp))
+                        .background(Color.Gray)
+                        .border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))
+                        .verticalScroll(rememberScrollState())) {
 
-        // The verticalScroll modifier is used to make the column scrollable
-        // when the content length is greater than the height of the column.
-        Column(Modifier.width(300.dp).height(550.dp).clip(RoundedCornerShape(14.dp))
-            .background(Color.Gray).border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))
-            .verticalScroll(rememberScrollState())) {
+                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween) {
 
-            Row(modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                        // Update
+                        IconButtonAction(Icons.Filled.Edit, "Modification de la tache",
+                            onClick = { navController.navigate("update/${taskId}") })
 
-                // Update
-                IconButtonAction(Icons.Filled.Edit, "Modification de la tache",
-                    onClick = { navController.navigate("update/${taskId}") })
+                        // Delete
+                        IconButtonAction(Icons.Filled.Delete, "Suppression de la tache",
+                            onClick = {/* TODO */ }, color = Color(170, 0, 0, 255))
+                    }
 
-                // Delete
-                IconButtonAction(Icons.Filled.Delete, "Suppression de la tache",
-                    onClick = {/* TODO */})
-            }
+                    // Task details
 
-            // Task details
+                    if (task != null) {
+                        Column(modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally) {
 
-            if (task != null) {
-                Column(modifier = Modifier.padding(16.dp).fillMaxWidth(), verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally) {
+                            // title
+                            TaskDetail("Titre : ", task.title)
 
-                    // title
-                    TaskDetail("Titre : ", task.title)
+                            // description
+                            TaskDetail("Description : ", task.description)
 
-                    // description
-                    TaskDetail("Description : ", task.description)
+                            // date
+                            val date = task.date
+                            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
-                    // date
-                    val date = task.date
-                    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                            TaskDetail("Date : ", date.format(formatter))
 
-                    TaskDetail("Date : ", date.format(formatter))
+                            // hours
+                            TaskDetail("Heure : ", task.hours)
 
-                    // hours
-                    TaskDetail("Heure : ", task.hours)
-
-                    Button(onClick = {
-                        markAsDone(viewModel, task)
-                        showPopup = true },
-                        colors = ButtonDefaults.buttonColors(contentColor = Color.Black,
-                            containerColor = Color(0, 100, 0, 255)), enabled = task.status != "Réalisé") {
-                        if (task.status != "Réalisé") {
-                            Text(text = "Finir la tâche")
-                        } else {
-                            Text(text = "Tâche terminée")
+                            Button(onClick = {
+                                    markAsDone(viewModel, task)
+                                    showPopup = true
+                                    showFireworks = true
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    contentColor = Color.Black,
+                                    containerColor = Color(0, 100, 0, 255)
+                                ), enabled = task.status != "Réalisé"
+                            ) {
+                                if (task.status != "Réalisé") {
+                                    Text(text = "Finir la tâche")
+                                } else {
+                                    Text(text = "Tâche terminée")
+                                }
+                            }
+                        }
+                    } else {
+                        Row(modifier = Modifier.fillMaxWidth().padding(10.dp)
+                                .clip(RoundedCornerShape(10.dp)).background(Color.LightGray)
+                                .border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
+                                .padding(10.dp),
+                            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text(text = "Tâche non trouvée")
                         }
                     }
                 }
-            } else {
-                Row(modifier = Modifier.fillMaxWidth().padding(10.dp)
-                        .clip(RoundedCornerShape(10.dp)).background(Color.LightGray)
-                        .border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
-                        .padding(10.dp),
-                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(text = "Tâche non trouvée")
+            }
+        }
+
+        if (showFireworks) {
+            FireworksAnimation(Modifier.fillMaxSize(), 3000, 1f)
+            FireworksAnimation(Modifier.fillMaxSize(), 5000, 2f)
+            FireworksAnimation(Modifier.fillMaxSize(), 2000, 3f)
+        }
+
+        if (showPopup) {
+            Popup(alignment = Alignment.Center, onDismissRequest = { showPopup = false }) {
+                Column(modifier = Modifier.fillMaxWidth().padding(10.dp).clip(RoundedCornerShape(10.dp))
+                    .background(Color.Black).border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
+                    .padding(10.dp)){
+                    Text(text = "Vous avez réalisé cette tache ! Bravo, une de moins !", color = Color.White, style = MaterialTheme.typography.headlineSmall)
+                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                        NotificationHelper.showNotification(context, task?.title ?: "Tâche")
+                    }
                 }
+            }
+
+            LaunchedEffect(Unit) {
+                delay(5000)
+                showFireworks = false
+                showPopup = false
+                navController.navigate("home")
             }
         }
     }
 }
+
