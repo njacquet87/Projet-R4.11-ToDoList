@@ -36,4 +36,7 @@ interface TaskDao {
 
     @Query("UPDATE Tasks SET status = 'Réalisé' WHERE id = :id")
     suspend fun markAsDone(id: Int?)
+
+    @Query("UPDATE Tasks SET status = 'En retard' WHERE id = :id")
+    suspend fun marckAsLate(id: Int?)
 }

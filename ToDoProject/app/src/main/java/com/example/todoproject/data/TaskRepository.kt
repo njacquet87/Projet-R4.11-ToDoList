@@ -17,6 +17,8 @@ interface TaskRepository {
 
     suspend fun markTaskAsDone(id: Int?)
 
+    suspend fun markTaskAsLate(id: Int?)
+
     suspend fun insertTask(task: TaskEntity)
 
     suspend fun updateTask(task: TaskEntity)

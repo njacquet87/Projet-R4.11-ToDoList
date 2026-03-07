@@ -16,6 +16,8 @@ class OfflineTaskRepository(private val taskDao: TaskDao) : TaskRepository {
 
     override suspend fun markTaskAsDone(id: Int?) = taskDao.markAsDone(id)
 
+    override suspend fun markTaskAsLate(id: Int?) = taskDao.marckAsLate(id)
+
     override suspend fun insertTask(task: TaskEntity) = taskDao.insert(task)
 
     override suspend fun updateTask(task: TaskEntity) = taskDao.update(task)

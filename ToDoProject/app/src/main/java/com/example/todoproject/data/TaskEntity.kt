@@ -3,6 +3,9 @@ package com.example.todoproject.data
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 /**
  * Represent a task in the database
@@ -33,4 +36,28 @@ data class TaskEntity(
 
     @ColumnInfo(name = "status")
     val status: String
-)
+) {
+    fun isLate(): Boolean {
+        if (status != "En cours") {
+            return false
+        }
+
+        val date = LocalDate.parse(this.date)
+        val now = LocalDate.now()
+
+        if (date.isBefore(now)) {
+            return true
+        }
+
+        if (date.isEqual(now)) {
+            val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+            val taskTime = LocalTime.parse(hours, timeFormatter)
+            val currentTime = LocalTime.now()
+            if (taskTime.isBefore(currentTime)) {
+                return true
+            }
+        }
+
+        return false
+    }
+}
