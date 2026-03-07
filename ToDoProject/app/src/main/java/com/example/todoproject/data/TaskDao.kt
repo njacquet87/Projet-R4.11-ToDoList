@@ -32,7 +32,7 @@ interface TaskDao {
     fun getTaskById(id: Int): Flow<TaskEntity?>
 
     @Query("SELECT * FROM Tasks WHERE status = :status ORDER BY date, hours")
-    fun getTasksSortedByStatus(status: String): List<TaskEntity>
+    fun getTasksSortedByStatus(status: String): Flow<List<TaskEntity>>
 
     @Query("UPDATE Tasks SET status = 'Réalisé' WHERE id = :id")
     suspend fun markAsDone(id: Int?)

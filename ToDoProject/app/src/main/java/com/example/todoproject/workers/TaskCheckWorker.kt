@@ -12,6 +12,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.todoproject.data.OfflineTaskRepository
 import com.example.todoproject.data.TaskDatabase
+import com.example.todoproject.data.TaskEntity
 import kotlin.collections.forEach
 import kotlin.random.Random
 
@@ -35,7 +36,7 @@ object NotificationHelper {
 
 suspend fun checkTasksAndNotify(context: Context, repository: OfflineTaskRepository) : Boolean {
 
-    val tasks = repository.getTasksSortedByStatus("En cours")
+    val tasks = repository.getTasksSortedByStatus("En cours") as List<TaskEntity>
 
     return try {
         tasks.forEach { task ->

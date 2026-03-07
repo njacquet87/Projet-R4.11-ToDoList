@@ -32,13 +32,25 @@ import com.example.todoproject.data.TaskEntity
  */
 @Composable
 fun TaskItem(task: TaskEntity, onDetailClick: () -> Unit, onDeleteClick: () -> Unit, onUpdateClick: () -> Unit) {
+
+    val yellow = Color(170, 170, 0, 255)
+    val green = Color(0, 170, 0, 255)
+    val red = Color(170, 0, 0, 255)
+
+    val color = when (task.status) {
+        "En cours" -> yellow
+        "Réalisé" -> green
+        "En retard" -> red
+        else -> Color.Black
+    }
+
     Row(modifier = Modifier.fillMaxWidth().padding(10.dp).clip(RoundedCornerShape(10.dp))
             .background(Color.LightGray).border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
             .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
 
         Column() { Text(text = task.title, style = MaterialTheme.typography.bodyMedium)
-            Text(text = task.status, style = MaterialTheme.typography.bodySmall) }
+            Text(text = task.status, style = MaterialTheme.typography.bodySmall, color = color) }
 
         Row() {
             // use of material icons from the library material-icons-extended
@@ -53,7 +65,7 @@ fun TaskItem(task: TaskEntity, onDetailClick: () -> Unit, onDeleteClick: () -> U
 
             // Delete
             IconButtonAction(Icons.Filled.Delete, "Suppression de la tache",
-                onClick = onDeleteClick)
+                onClick = onDeleteClick, color = red)
         }
     }
 }

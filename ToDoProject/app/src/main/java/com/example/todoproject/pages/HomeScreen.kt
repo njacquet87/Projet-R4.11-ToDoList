@@ -43,8 +43,7 @@ import com.example.todoproject.components.AddTask
 import com.example.todoproject.components.Header
 import com.example.todoproject.components.TaskItem
 import com.example.todoproject.ViewModel.TaskViewModel
-import com.example.todoproject.data.TaskEntity
-import kotlinx.coroutines.flow.Flow
+import kotlin.collections.emptyList
 
 
 /**
@@ -58,12 +57,11 @@ fun RequestNotificationPermission() {
     val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            // permission accordée
+        ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if (isGranted) { }
         }
-    }
+    )
 
     LaunchedEffect(Unit) {
         launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -86,11 +84,11 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
     // Use collectAsState to observe the tasks flow from the viewModel and update the UI when the data changes.
     // The when statement is used to filter the tasks based on the selected filter.
     val tasks by when (selectedFilter) {
-        "Toutes" -> viewModel.tasks.collectAsState()
-        else -> (viewModel.getTasksSortedByStatus(selectedFilter) as Flow<List<TaskEntity>>).collectAsState(initial = emptyList())
+        "Toutes" -> viewModel.tasks.collectAsState(initial = emptyList())
+        else -> viewModel.getTasksSortedByStatus(selectedFilter).collectAsState(initial = emptyList())
     }
 
-    val filterOptions = listOf("Toutes", "En cours", "Réalisé", "Dépassé")
+    val filterOptions = listOf("Toutes", "En cours", "Réalisé", "En retard")
 
     //header
     Header()
@@ -99,7 +97,7 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
     Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(50.dp))
 
         AddTask(onClick = { navController.navigate("add") })
 
