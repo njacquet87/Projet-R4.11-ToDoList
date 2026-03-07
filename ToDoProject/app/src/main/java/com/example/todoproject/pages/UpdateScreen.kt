@@ -133,7 +133,7 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
             IconButtonAction(Icons.AutoMirrored.Filled.ArrowBack, "Retour",
                 onClick = { navController.popBackStack() })
 
-            Text(text = "Detail de la tâche")
+            Text(text = "Détail de la tâche")
         }
 
         if (task != null) {
@@ -150,17 +150,17 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                 var title by remember { mutableStateOf(task.title) }
 
                 AppTextField(value = title, onValueChange = { newText -> title = newText },
-                    inputTitle = "Titre *", label = "Titre de la tache")
+                    inputTitle = "Titre *", label = "Titre de la tâche")
 
                 var description by remember { mutableStateOf(task.description) }
 
                 AppTextField(value = description, onValueChange = { newText -> description = newText },
-                    inputTitle = "Description *", label = "Description de la tache")
+                    inputTitle = "Description *", label = "Description de la tâche")
 
-                Text(text = "Date et heure de fin de la tache", style = MaterialTheme.typography.labelLarge)
+                Text(text = "Date et heure de fin de la tâche", style = MaterialTheme.typography.labelLarge)
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Affihcer la sélection", fontSize = 10.sp)
+                    Text(text = "Afficher la sélection", fontSize = 10.sp)
 
                     Checkbox(checked = isChecked, onCheckedChange = { isChecked = it },
                         colors = CheckboxDefaults.colors(checkedColor = Color.LightGray,
@@ -168,7 +168,7 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
 
                 if (isChecked) {
 
-                    Text(text = "Cliquez sur les icones pour sélectionner la date et l'heure", fontSize = 10.sp)
+                    Text(text = "Cliquez sur les icônes pour sélectionner la date et l'heure", fontSize = 10.sp)
 
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
                         DateInput(onDateSelected = { newDate -> selectedDate = newDate })
@@ -179,10 +179,10 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                     Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
                             .background(Color.LightGray, RoundedCornerShape(8.dp)).padding(8.dp)) {
                         if (selectedDate != null) {
-                            Text(text = "Date de fin de tache : ${selectedDate.toString()}")
+                            Text(text = "Date de fin de tâche : ${selectedDate.toString()}")
                         } else {
                             if (task.date != "null") {
-                                Text(text = "Date de fin de tache : ${task.date}")
+                                Text(text = "Date de fin de tâche : ${task.date}")
                             } else {
                                 Text(text = "Aucune date sélectionnée", fontSize = 13.sp)
                             }
@@ -195,10 +195,10 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                             .background(Color.LightGray, RoundedCornerShape(8.dp)).padding(8.dp)) {
                         if (time != null) {
                             // the !! operator are used to assert that the time variable is not null
-                            Text(text = "Heure de fin de tache : ${time!!.hour}:${time!!.minute}")
+                            Text(text = "Heure de fin de tâche : ${time!!.hour}:${time!!.minute}")
                         } else {
                             if (task.hours != "null") {
-                                Text(text = "Heure de fin de tache : ${task.hours}")
+                                Text(text = "Heure de fin de tâche : ${task.hours}")
                             } else {
                                 Text(text = "Aucune heure sélectionnée", fontSize = 13.sp)
                             }

@@ -56,15 +56,15 @@ fun TaskItem(task: TaskEntity, onDetailClick: () -> Unit, onDeleteClick: () -> U
             // use of material icons from the library material-icons-extended
 
             // Detail
-            IconButtonAction(Icons.Filled.Visibility, "Detail de la tache",
+            IconButtonAction(Icons.Filled.Visibility, "Détail de la tâche",
                 onClick = onDetailClick)
 
             // Update
-            IconButtonAction(Icons.Filled.Edit, "Modification de la tache",
+            IconButtonAction(Icons.Filled.Edit, "Modification de la tâche",
                 onClick = onUpdateClick)
 
             // Delete
-            IconButtonAction(Icons.Filled.Delete, "Suppression de la tache",
+            IconButtonAction(Icons.Filled.Delete, "Suppression de la tâche",
                 onClick = onDeleteClick, color = red)
         }
     }

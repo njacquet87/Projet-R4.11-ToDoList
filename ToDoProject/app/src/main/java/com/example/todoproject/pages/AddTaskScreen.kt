@@ -125,16 +125,16 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
 
             var title by remember { mutableStateOf("") }
 
-            AppTextField(value = title, onValueChange = { newText -> title = newText }, inputTitle = "Titre *", label = "Titre de la tache")
+            AppTextField(value = title, onValueChange = { newText -> title = newText }, inputTitle = "Titre *", label = "Titre de la tâche")
 
             var description by remember { mutableStateOf("") }
 
-            AppTextField(value = description, onValueChange = { newText -> description = newText }, inputTitle = "Description *", label = "Description de la tache")
+            AppTextField(value = description, onValueChange = { newText -> description = newText }, inputTitle = "Description *", label = "Description de la tâche")
 
-            Text(text = "Date et heure de fin de la tache", style = MaterialTheme.typography.labelLarge)
+            Text(text = "Date et heure de fin de la tâche", style = MaterialTheme.typography.labelLarge)
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Affihcer la sélection", fontSize = 10.sp)
+                Text(text = "Afficher la sélection", fontSize = 10.sp)
 
                 Checkbox(checked = isChecked, onCheckedChange = { isChecked = it },
                     colors = CheckboxDefaults.colors(checkedColor = Color.LightGray,
@@ -142,7 +142,7 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
 
             if (isChecked) {
 
-                Text(text = "Cliquez sur les icones pour sélectionner la date et l'heure", fontSize = 10.sp)
+                Text(text = "Cliquez sur les icônes pour sélectionner la date et l'heure", fontSize = 10.sp)
 
                 Row(modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceAround) {
@@ -153,7 +153,7 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
                 Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
                         .background(Color.LightGray, RoundedCornerShape(8.dp)).padding(8.dp)) {
                     if (selectedDate != null) {
-                        Text(text = "Date de fin de tache : ${selectedDate.toString()}")
+                        Text(text = "Date de fin de tâche : ${selectedDate.toString()}")
                     } else {
                         Text(text = "Aucune date sélectionnée", fontSize = 13.sp)
                     }
@@ -165,7 +165,7 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
                         .background(Color.LightGray, RoundedCornerShape(8.dp)).padding(8.dp)) {
                     if (time != null) {
                         // the !! operator are used to assert that the time variable is not null
-                        Text(text = "Heure de fin de tache : ${time!!.hour}:${time!!.minute}")
+                        Text(text = "Heure de fin de tâche : ${time!!.hour}:${time!!.minute}")
                     } else {
                         Text(text = "Aucune heure sélectionnée", fontSize = 13.sp)
                     }

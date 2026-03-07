@@ -27,11 +27,11 @@ fun AddTask(onClick: () -> Unit) {
 
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
 
-        IconButtonAction(Icons.Filled.AddCircleOutline, "ajout d'une tache",
+        IconButtonAction(Icons.Filled.AddCircleOutline, "Ajout d'une tâche",
             onClick = onClick, Modifier.width(35.dp).height(35.dp))
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        Text(text = "Ajouter une tache", style = MaterialTheme.typography.bodyMedium)
+        Text(text = "Ajouter une tâche", style = MaterialTheme.typography.bodyMedium)
     }
 }

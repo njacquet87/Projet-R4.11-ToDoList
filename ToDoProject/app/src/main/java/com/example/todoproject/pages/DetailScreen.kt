@@ -199,9 +199,9 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
         if (showPopup) {
             Popup(alignment = Alignment.Center, onDismissRequest = { showPopup = false }) {
                 Column(modifier = Modifier.fillMaxWidth().padding(10.dp).clip(RoundedCornerShape(10.dp))
-                    .background(Color.Black).border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
+                    .background(Color.LightGray).border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
                     .padding(10.dp)){
-                    Text(text = "Vous avez réalisé cette tache ! Bravo, une de moins !", color = Color.White, style = MaterialTheme.typography.headlineSmall)
+                    Text(text = "Vous avez réalisé cette tache ! Bravo, une de moins !", style = MaterialTheme.typography.headlineSmall)
                     if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
                         NotificationHelper.showNotification(context, task?.title ?: "Tâche")
                     }
@@ -218,10 +218,9 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
 
         if (showDeletePopUp) {
             Popup(alignment = Alignment.Center, onDismissRequest = {showDeletePopUp = false}) {
-                Column(modifier = Modifier.background(Color.White).clip(RoundedCornerShape(10.dp))
-                    .border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
-                    .padding(16.dp), verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(modifier = Modifier.fillMaxWidth().padding(10.dp).clip(RoundedCornerShape(10.dp))
+                    .background(Color.LightGray).border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
+                    .padding(10.dp)) {
                     Text(text = "Voulez-vous vraiment supprimer cette tâche ?")
                     Row(modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -229,7 +228,7 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                         if (task != null) {
                             Button(onClick = { showDeletePopUp = false }, colors = ButtonDefaults.buttonColors(
                                 contentColor = Color.Black,
-                                containerColor = Color.LightGray
+                                containerColor = Color.Gray
                             )) {
                                 Text(text = "Annuler")
                             }
@@ -238,7 +237,7 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                                 navController.navigate("home")},
                                 colors = ButtonDefaults.buttonColors(
                                     contentColor = Color.Black,
-                                    containerColor = Color.LightGray
+                                    containerColor = Color.Gray
                                 )) {
                                 Text(text = "Supprimer")
                             }

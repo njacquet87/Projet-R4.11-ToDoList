@@ -23,6 +23,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -135,7 +136,8 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
                             .padding(10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(text = "Aucune tâche à afficher")
+                        Text(text = "Aucune tâche à afficher. Vous avez réalisé toutes vos tâches !",
+                            style = MaterialTheme.typography.bodyMedium)
                     }
                 } else {
                     for (task in tasks) {
@@ -150,10 +152,9 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
 
             if (showDeletePopUp) {
                 Popup(alignment = Alignment.Center, onDismissRequest = {showDeletePopUp = false}) {
-                    Column(modifier = Modifier.background(Color.White).clip(RoundedCornerShape(10.dp))
-                        .border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
-                        .padding(16.dp), verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(modifier = Modifier.fillMaxWidth().padding(10.dp).clip(RoundedCornerShape(10.dp))
+                        .background(Color.LightGray).border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
+                        .padding(10.dp)) {
                         Text(text = "Voulez-vous vraiment supprimer cette tâche ?")
                         Row(modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                             horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -161,7 +162,7 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
                             if (taskToDelete != null) {
                                 Button(onClick = { showDeletePopUp = false }, colors = ButtonDefaults.buttonColors(
                                     contentColor = Color.Black,
-                                    containerColor = Color.LightGray
+                                    containerColor = Color.Gray
                                 )) {
                                     Text(text = "Annuler")
                                 }
@@ -169,7 +170,7 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
                                                  deleteTask(viewModel, taskToDelete!!)},
                                     colors = ButtonDefaults.buttonColors(
                                     contentColor = Color.Black,
-                                    containerColor = Color.LightGray
+                                    containerColor = Color.Gray
                                 )) {
                                     Text(text = "Supprimer")
                                 }
