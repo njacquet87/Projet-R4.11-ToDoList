@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,6 +40,7 @@ import com.example.todoproject.components.inputs.AppTextField
 import com.example.todoproject.components.inputs.DateAndHourInput
 import com.example.todoproject.components.utils.Header
 import com.example.todoproject.components.buttons.IconButtonAction
+import com.example.todoproject.components.inputs.PeriodicityInput
 import java.time.LocalDate
 
 /**
@@ -89,8 +91,6 @@ fun addTask(viewModel: TaskViewModel, title: String, description: String, date: 
 @Composable
 fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
 
-    var isChecked by remember { mutableStateOf(false) }
-
     var selectedDate: LocalDate? by remember { mutableStateOf(null) }
     var time: TimePickerState? by remember { mutableStateOf(null) }
 
@@ -128,9 +128,16 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
 
             Text(text = "Date et heure de fin de la tâche", style = MaterialTheme.typography.labelLarge)
 
-            DateAndHourInput(isChecked = isChecked, onCheckedChange = { isChecked = it },
-                selectedDate = selectedDate, onDateSelected = { selectedDate = it },
+            DateAndHourInput(selectedDate = selectedDate, onDateSelected = { selectedDate = it },
                 time = time, onTimeSelected = { time = it })
+
+            Spacer(Modifier.height(16.dp))
+
+            Text(text = "Périodicitée de la tâche", style = MaterialTheme.typography.labelLarge)
+
+            PeriodicityInput()
+
+            Spacer(Modifier.height(20.dp))
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 Button(onClick = {addTask(viewModel, title, description, selectedDate, time, navController)},

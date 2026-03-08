@@ -15,6 +15,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,14 +40,15 @@ import java.time.LocalDate
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DateAndHourInput(isChecked: Boolean, onCheckedChange: (Boolean) -> Unit,
-    selectedDate: LocalDate?, onDateSelected: (LocalDate?) -> Unit,
+fun DateAndHourInput(selectedDate: LocalDate?, onDateSelected: (LocalDate?) -> Unit,
     time: TimePickerState?, onTimeSelected: (TimePickerState?) -> Unit) {
+
+    var isChecked by remember { mutableStateOf(false) }
 
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(text = "Afficher la sélection", fontSize = 10.sp)
 
-        Checkbox(checked = isChecked, onCheckedChange = { onCheckedChange(it) },
+        Checkbox(checked = isChecked, onCheckedChange = { isChecked = it },
             colors = CheckboxDefaults.colors(checkedColor = Color.LightGray,
                 uncheckedColor = Color.LightGray, checkmarkColor = Color.Black)) }
 
