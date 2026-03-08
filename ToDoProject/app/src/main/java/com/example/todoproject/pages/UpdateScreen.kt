@@ -39,11 +39,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.todoproject.ViewModel.TaskViewModel
-import com.example.todoproject.components.AppTextField
-import com.example.todoproject.components.DateInput
-import com.example.todoproject.components.Header
-import com.example.todoproject.components.IconButtonAction
-import com.example.todoproject.components.TimeSelectInput
+import com.example.todoproject.components.inputs.AppTextField
+import com.example.todoproject.components.inputs.DateInput
+import com.example.todoproject.components.utils.Header
+import com.example.todoproject.components.buttons.IconButtonAction
+import com.example.todoproject.components.inputs.TimeSelectInput
 import com.example.todoproject.data.TaskEntity
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

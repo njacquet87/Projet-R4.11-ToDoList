@@ -1,4 +1,4 @@
-package com.example.todoproject.components
+package com.example.todoproject.components.taskComponents
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.todoproject.components.buttons.IconButtonAction
 import com.example.todoproject.data.TaskEntity
 
 /**
@@ -56,16 +57,22 @@ fun TaskItem(task: TaskEntity, onDetailClick: () -> Unit, onDeleteClick: () -> U
             // use of material icons from the library material-icons-extended
 
             // Detail
-            IconButtonAction(Icons.Filled.Visibility, "Détail de la tâche",
-                onClick = onDetailClick)
+            IconButtonAction(
+                Icons.Filled.Visibility, "Détail de la tâche",
+                onClick = onDetailClick
+            )
 
             // Update
-            IconButtonAction(Icons.Filled.Edit, "Modification de la tâche",
-                onClick = onUpdateClick)
+            IconButtonAction(
+                Icons.Filled.Edit, "Modification de la tâche",
+                onClick = onUpdateClick
+            )
 
             // Delete
-            IconButtonAction(Icons.Filled.Delete, "Suppression de la tâche",
-                onClick = onDeleteClick, color = red)
+            IconButtonAction(
+                Icons.Filled.Delete, "Suppression de la tâche",
+                onClick = onDeleteClick, color = red
+            )
         }
     }
 }

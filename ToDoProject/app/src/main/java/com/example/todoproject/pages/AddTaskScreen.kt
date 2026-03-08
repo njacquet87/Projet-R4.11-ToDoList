@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,8 +18,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -38,13 +35,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.todoproject.ViewModel.TaskViewModel
-import com.example.todoproject.components.AppTextField
-import com.example.todoproject.components.DateInput
-import com.example.todoproject.components.Header
-import com.example.todoproject.components.IconButtonAction
-import com.example.todoproject.components.TimeSelectInput
+import com.example.todoproject.components.inputs.AppTextField
+import com.example.todoproject.components.inputs.DateAndHourInput
+import com.example.todoproject.components.utils.Header
+import com.example.todoproject.components.buttons.IconButtonAction
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 /**
  * Check if all the inputs are not blank to enable the "Valider" button
@@ -133,44 +128,9 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
 
             Text(text = "Date et heure de fin de la tâche", style = MaterialTheme.typography.labelLarge)
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Afficher la sélection", fontSize = 10.sp)
-
-                Checkbox(checked = isChecked, onCheckedChange = { isChecked = it },
-                    colors = CheckboxDefaults.colors(checkedColor = Color.LightGray,
-                        uncheckedColor = Color.LightGray, checkmarkColor = Color.Black)) }
-
-            if (isChecked) {
-
-                Text(text = "Cliquez sur les icônes pour sélectionner la date et l'heure", fontSize = 10.sp)
-
-                Row(modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround) {
-                    DateInput(onDateSelected = { newDate -> selectedDate = newDate })
-                    TimeSelectInput(onConfirm = { newTime -> time = newTime }, enabled = selectedDate != null)
-                }
-
-                Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
-                        .background(Color.LightGray, RoundedCornerShape(8.dp)).padding(8.dp)) {
-                    if (selectedDate != null) {
-                        Text(text = "Date de fin de tâche : ${selectedDate.toString()}")
-                    } else {
-                        Text(text = "Aucune date sélectionnée", fontSize = 13.sp)
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
-                        .background(Color.LightGray, RoundedCornerShape(8.dp)).padding(8.dp)) {
-                    if (time != null) {
-                        // the !! operator are used to assert that the time variable is not null
-                        Text(text = "Heure de fin de tâche : ${time!!.hour}:${time!!.minute}")
-                    } else {
-                        Text(text = "Aucune heure sélectionnée", fontSize = 13.sp)
-                    }
-                }
-            }
+            DateAndHourInput(isChecked = isChecked, onCheckedChange = { isChecked = it },
+                selectedDate = selectedDate, onDateSelected = { selectedDate = it },
+                time = time, onTimeSelected = { time = it })
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 Button(onClick = {addTask(viewModel, title, description, selectedDate, time, navController)},

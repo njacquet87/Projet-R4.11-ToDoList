@@ -1,6 +1,5 @@
-package com.example.todoproject.components
+package com.example.todoproject.components.buttons
 
-import android.R
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable

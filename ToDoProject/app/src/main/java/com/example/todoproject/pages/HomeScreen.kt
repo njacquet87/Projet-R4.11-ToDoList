@@ -37,14 +37,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
-import com.example.todoproject.components.AddTask
-import com.example.todoproject.components.Header
-import com.example.todoproject.components.TaskItem
+import com.example.todoproject.components.utils.AddTask
+import com.example.todoproject.components.popup.DeletePopUp
+import com.example.todoproject.components.utils.Header
+import com.example.todoproject.components.taskComponents.TaskItem
 import com.example.todoproject.ViewModel.TaskViewModel
 import com.example.todoproject.data.TaskEntity
 import kotlin.collections.emptyList
@@ -150,34 +149,11 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
                 }
             }
 
-            if (showDeletePopUp) {
-                Popup(alignment = Alignment.Center, onDismissRequest = {showDeletePopUp = false}) {
-                    Column(modifier = Modifier.fillMaxWidth().padding(10.dp).clip(RoundedCornerShape(10.dp))
-                        .background(Color.LightGray).border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
-                        .padding(10.dp)) {
-                        Text(text = "Voulez-vous vraiment supprimer cette tâche ?")
-                        Row(modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
-                            horizontalArrangement = Arrangement.SpaceEvenly) {
-
-                            if (taskToDelete != null) {
-                                Button(onClick = { showDeletePopUp = false }, colors = ButtonDefaults.buttonColors(
-                                    contentColor = Color.Black,
-                                    containerColor = Color.Gray
-                                )) {
-                                    Text(text = "Annuler")
-                                }
-                                Button(onClick = { showDeletePopUp = false
-                                                 deleteTask(viewModel, taskToDelete!!)},
-                                    colors = ButtonDefaults.buttonColors(
-                                    contentColor = Color.Black,
-                                    containerColor = Color.Gray
-                                )) {
-                                    Text(text = "Supprimer")
-                                }
-                            }
-                        }
-                    }
-                }
+            if (showDeletePopUp && taskToDelete != null) {
+                DeletePopUp(onDismiss = { showDeletePopUp = false }, onConfirm = {
+                        showDeletePopUp = false
+                        deleteTask(viewModel, taskToDelete!!) }
+                )
             }
 
             Box() {

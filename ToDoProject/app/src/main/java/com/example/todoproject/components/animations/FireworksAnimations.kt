@@ -1,4 +1,4 @@
-package com.example.todoproject.components
+package com.example.todoproject.components.animations
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
