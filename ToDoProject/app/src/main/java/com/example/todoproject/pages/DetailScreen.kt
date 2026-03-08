@@ -1,8 +1,9 @@
 package com.example.todoproject.pages
 
 import android.Manifest
-import android.R
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.BorderStroke
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
+import com.example.todoproject.MainActivity
 import com.example.todoproject.ViewModel.TaskViewModel
 import com.example.todoproject.components.Header
 import com.example.todoproject.components.IconButtonAction
@@ -63,11 +64,20 @@ object NotificationHelper {
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     fun showNotification(context: Context, title: String) {
 
+        // Creates an Intent that opens MainActivity when the notification is tapped
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+
         val notification = NotificationCompat.Builder(context, "task_channel")
-            .setSmallIcon(R.drawable.ic_dialog_info)
-            .setContentTitle("Tâche Réalisé !")
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setContentTitle("Tâche Réalisée !")
             .setContentText("Bravo ! Vous venez de réaliser la tâche : $title")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
             .build()
 
         NotificationManagerCompat.from(context)

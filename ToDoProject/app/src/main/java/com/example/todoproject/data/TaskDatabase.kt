@@ -33,7 +33,7 @@ abstract class TaskDatabase : RoomDatabase() {
         // Manual migration from version 1 to version 2: Adding a new column "hours" to the Tasks table.
         val MIGRATION_1_2 = object : androidx.room.migration.Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE Tasks ADD COLUMN hours TEXT NOT NULL DEFAULT 'null")
+                database.execSQL("ALTER TABLE Tasks ADD COLUMN hours TEXT NOT NULL DEFAULT ''")
             }
         }
     }
