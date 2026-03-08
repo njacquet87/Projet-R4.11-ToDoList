@@ -40,15 +40,14 @@ import java.time.LocalDate
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DateAndHourInput(selectedDate: LocalDate?, onDateSelected: (LocalDate?) -> Unit,
+fun DateAndHourInput(isChecked: Boolean, onCheckedChange: (Boolean) -> Unit,
+    selectedDate: LocalDate?, onDateSelected: (LocalDate?) -> Unit,
     time: TimePickerState?, onTimeSelected: (TimePickerState?) -> Unit) {
-
-    var isChecked by remember { mutableStateOf(false) }
 
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(text = "Afficher la sélection", fontSize = 10.sp)
 
-        Checkbox(checked = isChecked, onCheckedChange = { isChecked = it },
+        Checkbox(checked = isChecked, onCheckedChange = { onCheckedChange(it) },
             colors = CheckboxDefaults.colors(checkedColor = Color.LightGray,
                 uncheckedColor = Color.LightGray, checkmarkColor = Color.Black)) }
 

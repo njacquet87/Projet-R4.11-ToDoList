@@ -34,5 +34,5 @@ fun TaskDetail(title: String, text: String) {
             .padding(16.dp, 10.dp, 16.dp, 10.dp))
     }
 
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(10.dp))
 }

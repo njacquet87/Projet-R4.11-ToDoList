@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -125,7 +126,7 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
 
                     // Back Arrow to go back to the HomeScreen
                     IconButtonAction(Icons.AutoMirrored.Filled.ArrowBack, "Retour",
-                        onClick = { navController.popBackStack() })
+                        onClick = { navController.navigate("home") })
 
                     Text(text = "Detail de la tâche")
                 }
@@ -170,6 +171,9 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
 
                             // hours
                             TaskDetail("Heure : ", task.hours)
+
+                            // Status
+                            TaskDetail("Status : ", task.status)
 
                             Button(onClick = {
                                     markAsDone(viewModel, task)

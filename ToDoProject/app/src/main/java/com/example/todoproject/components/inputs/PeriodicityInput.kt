@@ -24,9 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun PeriodicityInput() {
-
-    var isChecked by remember { mutableStateOf(false) }
+fun PeriodicityInput(isChecked: Boolean, onCheckedChange: (Boolean) -> Unit ) {
 
     var expanded by remember { mutableStateOf(false) }
     var selectedPeriocicity by remember { mutableStateOf("Aucune") }
@@ -36,7 +34,7 @@ fun PeriodicityInput() {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(text = "Afficher la sélection", fontSize = 10.sp)
 
-        Checkbox(checked = isChecked, onCheckedChange = { isChecked = it },
+        Checkbox(checked = isChecked, onCheckedChange = { onCheckedChange(it) },
             colors = CheckboxDefaults.colors(checkedColor = Color.LightGray,
                 uncheckedColor = Color.LightGray, checkmarkColor = Color.Black)) }
 

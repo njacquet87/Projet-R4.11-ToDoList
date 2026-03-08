@@ -91,6 +91,9 @@ fun addTask(viewModel: TaskViewModel, title: String, description: String, date: 
 @Composable
 fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
 
+    var isCheckedDateAndHoursInput by remember { mutableStateOf(false) }
+    var isCheckedPeriodicityInput by remember { mutableStateOf(false) }
+
     var selectedDate: LocalDate? by remember { mutableStateOf(null) }
     var time: TimePickerState? by remember { mutableStateOf(null) }
 
@@ -128,14 +131,15 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
 
             Text(text = "Date et heure de fin de la tâche", style = MaterialTheme.typography.labelLarge)
 
-            DateAndHourInput(selectedDate = selectedDate, onDateSelected = { selectedDate = it },
+            DateAndHourInput(isChecked = isCheckedDateAndHoursInput, onCheckedChange = { isCheckedDateAndHoursInput = it },
+                selectedDate = selectedDate, onDateSelected = { selectedDate = it },
                 time = time, onTimeSelected = { time = it })
 
             Spacer(Modifier.height(16.dp))
 
             Text(text = "Périodicitée de la tâche", style = MaterialTheme.typography.labelLarge)
 
-            PeriodicityInput()
+            PeriodicityInput(isChecked = isCheckedPeriodicityInput, onCheckedChange = { isCheckedPeriodicityInput = it })
 
             Spacer(Modifier.height(20.dp))
 
