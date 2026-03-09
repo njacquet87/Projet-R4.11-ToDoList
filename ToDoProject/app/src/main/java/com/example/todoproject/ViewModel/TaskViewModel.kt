@@ -6,7 +6,6 @@ import com.example.todoproject.data.TaskEntity
 import com.example.todoproject.data.TaskRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -25,7 +24,7 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
         return repository.getTaskById(id)
     }
 
-    fun addTask(title: String, description: String, date: String, hours: String) {
+    fun addTask(title: String, description: String, date: String, hours: String, periodicity: String) {
         viewModelScope.launch {
             repository.insertTask(
                 TaskEntity(
@@ -33,13 +32,14 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
                     description = description,
                     date = date,
                     hours = hours,
+                    periodicity = periodicity,
                     status = "En cours"
                 )
             )
         }
     }
 
-    fun updateTask(id: Int, title: String, description: String, date: String, hours: String, status: String) {
+    fun updateTask(id: Int, title: String, description: String, date: String, hours: String, periodicity: String, status: String) {
         viewModelScope.launch {
             repository.updateTask(
                 TaskEntity(
@@ -48,6 +48,7 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
                     description = description,
                     date = date,
                     hours = hours,
+                    periodicity = periodicity,
                     status = status
                 )
             )
@@ -62,5 +63,11 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
 
     fun getTasksSortedByStatus(status: String): Flow<List<TaskEntity>> {
         return repository.getTasksSortedByStatus(status)
+    }
+
+    fun delete(task: TaskEntity) {
+        viewModelScope.launch {
+            repository.deleteTask(task)
+        }
     }
 }

@@ -19,8 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,13 +37,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.todoproject.ViewModel.TaskViewModel
-import com.example.todoproject.components.AppTextField
-import com.example.todoproject.components.DateInput
-import com.example.todoproject.components.Header
-import com.example.todoproject.components.IconButtonAction
-import com.example.todoproject.components.TimeSelectInput
+import com.example.todoproject.components.inputs.AppTextField
+import com.example.todoproject.components.utils.Header
+import com.example.todoproject.components.buttons.IconButtonAction
+import com.example.todoproject.components.inputs.DateAndHourInput
+import com.example.todoproject.components.inputs.PeriodicityInput
 import com.example.todoproject.data.TaskEntity
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 /**
@@ -96,6 +95,8 @@ fun isTimeSelectEnabled(selectedDate: LocalDate?, task: TaskEntity): Boolean {
 
 /**
  * Update a task in the TaskViewModel and navigate back to the HomeScreen
+ * The status of the task is updated depending on the selected date and the current date.
+ * Also work if the hours is modifyed without modifying the date, or if the date is modified without modifying the hours.
  * @param viewModel the TaskViewModel to manage the tasks data
  * @param title the title of the task
  * @param description the description of the task
@@ -107,20 +108,49 @@ fun isTimeSelectEnabled(selectedDate: LocalDate?, task: TaskEntity): Boolean {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 fun updateTask(viewModel: TaskViewModel, title: String, description: String, date: LocalDate?,
-               hours: TimePickerState?, status: String, taskId: Int, navController: NavController) {
-    viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), status)
-    navController.navigate("detail/${taskId}")
+               hours: TimePickerState?, periodicity: String,status: String, taskId: Int, navController: NavController) {
+
+    if (date != null && hours != null) {
+        var now = LocalDateTime.now()
+        var dateToCompare = LocalDateTime.of(date.year, date.month, date.dayOfMonth, hours.hour, hours.minute)
+
+        if (status == "En cours" && dateToCompare.isBefore(now)) {
+            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, "En retard")
+            navController.navigate("detail/${taskId}")
+        } else if (status == "En retard" && dateToCompare.isAfter(now)) {
+            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, "En cours")
+            navController.navigate("detail/${taskId}")
+        } else {
+            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, status)
+            navController.navigate("detail/${taskId}")
+        }
+    } else {
+        viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, status)
+        navController.navigate("detail/${taskId}")
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId : Int) {
 
-    var isChecked by remember { mutableStateOf(true) }
+    var isCheckedDateAndHoursInput by remember { mutableStateOf(false) }
+    var isCheckedPeriodicityInput by remember { mutableStateOf(false) }
+
     val task = viewModel.getTaskById(taskId).collectAsState(initial = null).value
 
-    var selectedDate: LocalDate? by remember { mutableStateOf(dateToLocalDate(task?.date)) }
-    var time: TimePickerState? by remember { mutableStateOf(timeToTimePickerState(task?.hours)) }
+    // Pre-fill with existing task values
+    var selectedDate: LocalDate? by remember(task) { mutableStateOf(dateToLocalDate(task?.date)) }
+    var time: TimePickerState? by remember(task) { mutableStateOf(timeToTimePickerState(task?.hours)) }
+    var periodicity: String by remember(task) { mutableStateOf(task?.periodicity ?: "Aucune") }
+
+    // Auto-open sections if the task already has values
+    if (task != null && task.date != "null" && !isCheckedDateAndHoursInput) {
+        isCheckedDateAndHoursInput = true
+    }
+    if (task != null && task.periodicity != "Aucune" && !isCheckedPeriodicityInput) {
+        isCheckedPeriodicityInput = true
+    }
 
     Header()
 
@@ -133,7 +163,7 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
             IconButtonAction(Icons.AutoMirrored.Filled.ArrowBack, "Retour",
                 onClick = { navController.popBackStack() })
 
-            Text(text = "Detail de la tâche")
+            Text(text = "Modification de la tâche")
         }
 
         if (task != null) {
@@ -150,65 +180,31 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                 var title by remember { mutableStateOf(task.title) }
 
                 AppTextField(value = title, onValueChange = { newText -> title = newText },
-                    inputTitle = "Titre *", label = "Titre de la tache")
+                    inputTitle = "Titre *", label = "Titre de la tâche")
 
                 var description by remember { mutableStateOf(task.description) }
 
                 AppTextField(value = description, onValueChange = { newText -> description = newText },
-                    inputTitle = "Description *", label = "Description de la tache")
+                    inputTitle = "Description *", label = "Description de la tâche")
 
-                Text(text = "Date et heure de fin de la tache", style = MaterialTheme.typography.labelLarge)
+                Text(text = "Date et heure de fin de la tâche", style = MaterialTheme.typography.labelLarge)
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Affihcer la sélection", fontSize = 10.sp)
+                DateAndHourInput(isChecked = isCheckedDateAndHoursInput, onCheckedChange = { isCheckedDateAndHoursInput = it },
+                    selectedDate = selectedDate, onDateSelected = { selectedDate = it },
+                    time = time, onTimeSelected = { time = it })
 
-                    Checkbox(checked = isChecked, onCheckedChange = { isChecked = it },
-                        colors = CheckboxDefaults.colors(checkedColor = Color.LightGray,
-                            uncheckedColor = Color.LightGray, checkmarkColor = Color.Black)) }
+                Spacer(Modifier.height(16.dp))
 
-                if (isChecked) {
+                Text(text = "Périodicitée de la tâche", style = MaterialTheme.typography.labelLarge)
 
-                    Text(text = "Cliquez sur les icones pour sélectionner la date et l'heure", fontSize = 10.sp)
+                PeriodicityInput(isChecked = isCheckedPeriodicityInput, onCheckedChange = { isCheckedPeriodicityInput = it },
+                    periodicity = periodicity, onPeriodicitySelected = { periodicity = it })
 
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
-                        DateInput(onDateSelected = { newDate -> selectedDate = newDate })
-                        TimeSelectInput(onConfirm = { newTime -> time = newTime },
-                            enabled = isTimeSelectEnabled(selectedDate, task))
-                    }
-
-                    Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
-                            .background(Color.LightGray, RoundedCornerShape(8.dp)).padding(8.dp)) {
-                        if (selectedDate != null) {
-                            Text(text = "Date de fin de tache : ${selectedDate.toString()}")
-                        } else {
-                            if (task.date != "null") {
-                                Text(text = "Date de fin de tache : ${task.date}")
-                            } else {
-                                Text(text = "Aucune date sélectionnée", fontSize = 13.sp)
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
-                            .background(Color.LightGray, RoundedCornerShape(8.dp)).padding(8.dp)) {
-                        if (time != null) {
-                            // the !! operator are used to assert that the time variable is not null
-                            Text(text = "Heure de fin de tache : ${time!!.hour}:${time!!.minute}")
-                        } else {
-                            if (task.hours != "null") {
-                                Text(text = "Heure de fin de tache : ${task.hours}")
-                            } else {
-                                Text(text = "Aucune heure sélectionnée", fontSize = 13.sp)
-                            }
-                        }
-                    }
-                }
+                Spacer(Modifier.height(20.dp))
 
                 Row(modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center) {
-                    Button(onClick = {updateTask(viewModel, title, description, selectedDate, time, task.status, taskId, navController)},
+                    Button(onClick = { updateTask(viewModel, title, description, selectedDate, time, periodicity, task.status, taskId, navController) },
                         colors = ButtonDefaults.buttonColors(contentColor = Color.Black, containerColor = Color.LightGray,
                             disabledContainerColor = Color(170, 0, 0, 255)),
                         enabled = areAllInputNotBlank(title, description)) {

@@ -1,4 +1,4 @@
-package com.example.todoproject.components
+package com.example.todoproject.components.inputs
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
@@ -14,8 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import java.time.LocalDate
+import com.example.todoproject.components.buttons.IconButtonAction
 import java.util.Calendar
 
 /**
@@ -33,8 +32,12 @@ fun TimeSelectInput(onConfirm: (TimePickerState) -> Unit, enabled: Boolean = tru
 
     var showTimePicker by remember { mutableStateOf(false) }
 
-    IconButtonAction(imageVector = Icons.Filled.AccessTime,
-        contentDescripton = "Sélectionner une heure", onClick = { showTimePicker = true }, enabled = enabled)
+    IconButtonAction(
+        imageVector = Icons.Filled.AccessTime,
+        contentDescripton = "Sélectionner une heure",
+        onClick = { showTimePicker = true },
+        enabled = enabled
+    )
 
     if (showTimePicker) {
         AlertDialog(onDismissRequest = { showTimePicker = false }, title = { Text("Sélectionner une heure") },

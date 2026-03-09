@@ -35,7 +35,10 @@ data class TaskEntity(
     val hours: String,
 
     @ColumnInfo(name = "status")
-    val status: String
+    val status: String,
+
+    @ColumnInfo(name = "periodicity")
+    val periodicity: String = "Aucune"
 ) {
     fun isLate(): Boolean {
         if (status != "En cours") {
@@ -59,5 +62,35 @@ data class TaskEntity(
         }
 
         return false
+    }
+
+    suspend fun changeDate(taskEntity: TaskEntity, repository: OfflineTaskRepository) {
+
+        // get the date and the today date
+        var newDate = LocalDate.parse(taskEntity.date)
+        val now = LocalDate.now()
+
+        // change the date of the task depending on its periodicity until the date is after the today date
+        while (!newDate.isAfter(now)) {
+            newDate = when (taskEntity.periodicity) {
+                "Quotidienne"  -> newDate.plusDays(1)
+                "Hebdomadaire" -> newDate.plusWeeks(1)
+                "Mensuelle"    -> newDate.plusMonths(1)
+                else           -> break.let { return }
+            }
+        }
+
+        // update the task with the new date and the status "En cours"
+        repository.updateTask(
+            TaskEntity(
+                id = taskEntity.id,
+                title = taskEntity.title,
+                description = taskEntity.description,
+                date = newDate.toString(),
+                hours = taskEntity.hours,
+                status = "En cours",
+                periodicity = taskEntity.periodicity
+            )
+        )
     }
 }

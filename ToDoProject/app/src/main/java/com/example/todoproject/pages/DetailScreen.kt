@@ -1,10 +1,5 @@
 package com.example.todoproject.pages
 
-import android.Manifest
-import android.R
-import android.content.Context
-import android.content.pm.PackageManager
-import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,10 +21,8 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,41 +31,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
 import com.example.todoproject.ViewModel.TaskViewModel
-import com.example.todoproject.components.Header
-import com.example.todoproject.components.IconButtonAction
-import com.example.todoproject.components.TaskDetail
+import com.example.todoproject.components.utils.Header
+import com.example.todoproject.components.buttons.IconButtonAction
+import com.example.todoproject.components.taskComponents.TaskDetail
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
-import com.example.todoproject.components.FireworksAnimation
+import com.example.todoproject.components.animations.MarkAnimation
+import com.example.todoproject.components.popup.DeletePopUp
 import com.example.todoproject.data.TaskEntity
-import kotlinx.coroutines.delay
-import java.time.format.DateTimeFormatter
-import kotlin.random.Random
 
-
-object NotificationHelper {
-
-    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-    fun showNotification(context: Context, title: String) {
-
-        val notification = NotificationCompat.Builder(context, "task_channel")
-            .setSmallIcon(R.drawable.ic_dialog_info)
-            .setContentTitle("Tâche Réalisé !")
-            .setContentText("Bravo ! Vous venez de réaliser la tâche : $title")
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .build()
-
-        NotificationManagerCompat.from(context)
-            .notify(Random.nextInt(), notification)
-    }
-}
 
 /**
  * Mark a task as done by changing its status to "Réalisé"
@@ -98,7 +67,7 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
     val task = viewModel.getTaskById(taskId).collectAsState(initial = null).value
     var showPopup by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    var showFireworks by remember { mutableStateOf(false) }
+    var showDeletePopUp by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -113,7 +82,7 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
 
                     // Back Arrow to go back to the HomeScreen
                     IconButtonAction(Icons.AutoMirrored.Filled.ArrowBack, "Retour",
-                        onClick = { navController.popBackStack() })
+                        onClick = { navController.navigate("home") })
 
                     Text(text = "Detail de la tâche")
                 }
@@ -134,7 +103,7 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
 
                         // Delete
                         IconButtonAction(Icons.Filled.Delete, "Suppression de la tache",
-                            onClick = {/* TODO */ }, color = Color(170, 0, 0, 255))
+                            onClick = { showDeletePopUp= true }, color = Color(170, 0, 0, 255))
                     }
 
                     // Task details
@@ -151,18 +120,20 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                             TaskDetail("Description : ", task.description)
 
                             // date
-                            val date = task.date
-                            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-
-                            TaskDetail("Date : ", date.format(formatter))
+                            TaskDetail("Date : ", task.date)
 
                             // hours
                             TaskDetail("Heure : ", task.hours)
 
+                            // Status
+                            TaskDetail("Status : ", task.status)
+
+                            // Periodicity
+                            TaskDetail("Périodicité : ", task.periodicity)
+
                             Button(onClick = {
                                     markAsDone(viewModel, task)
                                     showPopup = true
-                                    showFireworks = true
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                     contentColor = Color.Black,
@@ -189,30 +160,19 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
             }
         }
 
-        if (showFireworks) {
-            FireworksAnimation(Modifier.fillMaxSize(), 3000, 1f)
-            FireworksAnimation(Modifier.fillMaxSize(), 5000, 2f)
-            FireworksAnimation(Modifier.fillMaxSize(), 2000, 3f)
+        if (showPopup) {
+            MarkAnimation(onChange = { showPopup = false }, navController = navController, context = context, task = task)
         }
 
-        if (showPopup) {
-            Popup(alignment = Alignment.Center, onDismissRequest = { showPopup = false }) {
-                Column(modifier = Modifier.fillMaxWidth().padding(10.dp).clip(RoundedCornerShape(10.dp))
-                    .background(Color.Black).border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
-                    .padding(10.dp)){
-                    Text(text = "Vous avez réalisé cette tache ! Bravo, une de moins !", color = Color.White, style = MaterialTheme.typography.headlineSmall)
-                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
-                        NotificationHelper.showNotification(context, task?.title ?: "Tâche")
+        if (showDeletePopUp) {
+            DeletePopUp(onDismiss = { showDeletePopUp = false }, onConfirm = {
+                    showDeletePopUp = false
+                    if (task != null) {
+                        deleteTask(viewModel, task)
+                        navController.navigate("home")
                     }
                 }
-            }
-
-            LaunchedEffect(Unit) {
-                delay(5000)
-                showFireworks = false
-                showPopup = false
-                navController.navigate("home")
-            }
+            )
         }
     }
 }

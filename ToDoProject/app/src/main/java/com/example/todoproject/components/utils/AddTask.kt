@@ -1,6 +1,5 @@
-package com.example.todoproject.components
+package com.example.todoproject.components.utils
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.todoproject.components.buttons.IconButtonAction
 
 /**
  * Display a button to add a task and "Ajouter une tache" on the HomeScreen
@@ -27,11 +27,13 @@ fun AddTask(onClick: () -> Unit) {
 
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
 
-        IconButtonAction(Icons.Filled.AddCircleOutline, "ajout d'une tache",
-            onClick = onClick, Modifier.width(35.dp).height(35.dp))
+        IconButtonAction(
+            Icons.Filled.AddCircleOutline, "Ajout d'une tâche",
+            onClick = onClick, Modifier.width(35.dp).height(35.dp)
+        )
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        Text(text = "Ajouter une tache", style = MaterialTheme.typography.bodyMedium)
+        Text(text = "Ajouter une tâche", style = MaterialTheme.typography.bodyMedium)
     }
 }

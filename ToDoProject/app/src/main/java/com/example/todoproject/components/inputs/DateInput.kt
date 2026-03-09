@@ -1,4 +1,4 @@
-package com.example.todoproject.components
+package com.example.todoproject.components.inputs
 
 
 import androidx.compose.material.icons.Icons

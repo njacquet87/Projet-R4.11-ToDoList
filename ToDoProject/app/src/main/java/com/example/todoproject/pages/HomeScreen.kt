@@ -23,6 +23,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,10 +40,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.todoproject.components.AddTask
-import com.example.todoproject.components.Header
-import com.example.todoproject.components.TaskItem
+import com.example.todoproject.components.animations.MarkAnimation
+import com.example.todoproject.components.utils.AddTask
+import com.example.todoproject.components.popup.DeletePopUp
+import com.example.todoproject.components.utils.Header
+import com.example.todoproject.components.taskComponents.TaskItem
 import com.example.todoproject.ViewModel.TaskViewModel
+import com.example.todoproject.data.TaskEntity
 import kotlin.collections.emptyList
 
 
@@ -53,8 +57,6 @@ import kotlin.collections.emptyList
  */
 @Composable
 fun RequestNotificationPermission() {
-
-    val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission(),
@@ -69,6 +71,16 @@ fun RequestNotificationPermission() {
 }
 
 /**
+ * Function to delete a task from the database using the TaskViewModel.
+ * The function is called when the user clicks on the delete button of a task in the TaskItem composable.
+ * @param viewModel the TaskViewModel to manage the tasks data
+ * @param task the task to delete
+ */
+fun deleteTask(viewModel: TaskViewModel, task: TaskEntity) {
+    viewModel.delete(task)
+}
+
+/**
  * Display the home screen with a header and a list of tasks.
  * Also display a button to add a new task.
  * @param navController the navController to navigate between screens
@@ -80,6 +92,11 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
     RequestNotificationPermission()
     var expanded by remember { mutableStateOf(false) }
     var selectedFilter by remember { mutableStateOf("Toutes") }
+    var showDeletePopUp by remember { mutableStateOf(false) }
+    var taskToDelete by remember { mutableStateOf<TaskEntity?>(null) }
+    var showAnimation by remember { mutableStateOf(false) }
+    var taskDone by remember { mutableStateOf<TaskEntity?>(null) }
+    val context = LocalContext.current
 
     // Use collectAsState to observe the tasks flow from the viewModel and update the UI when the data changes.
     // The when statement is used to filter the tasks based on the selected filter.
@@ -90,59 +107,96 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
 
     val filterOptions = listOf("Toutes", "En cours", "Réalisé", "En retard")
 
-    //header
-    Header()
+    Box(Modifier.fillMaxSize()) {
+        //header
+        Header()
 
-    // body
-    Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally) {
+        // body
+        Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
 
-        Spacer(modifier = Modifier.height(50.dp))
+            Spacer(Modifier.height(80.dp))
 
-        AddTask(onClick = { navController.navigate("add") })
+            AddTask(onClick = { navController.navigate("add") })
 
-        // List of tasks.
-        // The verticalScroll modifier is used to make the column scrollable
-        // when the content length is greater than the height of the column.
-        Column(Modifier.width(300.dp).height(550.dp).clip(RoundedCornerShape(14.dp))
-            .background(Color.Gray).border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))
-            .verticalScroll(rememberScrollState())) {
+            // List of tasks.
+            // The verticalScroll modifier is used to make the column scrollable
+            // when the content length is greater than the height of the column.
+            Column(Modifier.width(300.dp).height(550.dp).clip(RoundedCornerShape(14.dp))
+                    .background(Color.Gray)
+                    .border(BorderStroke(2.dp, Color.Gray), RoundedCornerShape(14.dp))
+                    .verticalScroll(rememberScrollState())) {
 
-            // Display each task in the mockTasks list with a TaskItem composable.
-            if (tasks.isEmpty()) {
+                // Display each task in the mockTasks list with a TaskItem composable.
+                if (tasks.isEmpty()) {
 
-                Row(modifier = Modifier.fillMaxWidth().padding(10.dp).clip(RoundedCornerShape(10.dp))
-                    .background(Color.LightGray).border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
-                    .padding(10.dp),
-                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(text = "Aucune tâche à afficher")
+                    Row(modifier = Modifier.fillMaxWidth().padding(10.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(Color.LightGray)
+                            .border(BorderStroke(1.dp, Color.Gray), RoundedCornerShape(10.dp))
+                            .padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text(text = "Aucune tâche à afficher. Vous avez réalisé toutes vos tâches !",
+                            style = MaterialTheme.typography.bodyMedium)
+                    }
+                } else {
+                    for (task in tasks) {
+                        TaskItem(task, onDetailClick = { navController.navigate("detail/${task.id}") },
+                            onDeleteClick = { showDeletePopUp = true
+                                            taskToDelete = task},
+                            onUpdateClick = { navController.navigate("update/${task.id}") },
+                            viewModel = viewModel,
+                            onTaskDone = { doneTask ->
+                                taskDone = doneTask
+                                showAnimation = true
+                            })
+                    }
                 }
-            } else {
-                for (task in tasks) {
-                    TaskItem(task, onDetailClick = { navController.navigate("detail/${task.id}") },
-                        onDeleteClick = { /* TODO */ },
-                        onUpdateClick = { navController.navigate("update/${task.id}") })
+            }
+
+            if (showDeletePopUp && taskToDelete != null) {
+                DeletePopUp(onDismiss = { showDeletePopUp = false }, onConfirm = {
+                        showDeletePopUp = false
+                        deleteTask(viewModel, taskToDelete!!) }
+                )
+            }
+
+            Box() {
+                Button(
+                    onClick = { expanded = true }, modifier = Modifier.width(150.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.Black,
+                        containerColor = Color.LightGray
+                    )
+                ) {
+                    Text(text = "Trier par: $selectedFilter", fontSize = 10.sp)
+                }
+                DropdownMenu(
+                    expanded = expanded, onDismissRequest = { expanded = false },
+                    modifier = Modifier.width(150.dp).background(Color.LightGray)
+                ) {
+                    filterOptions.forEach { filter ->
+                        DropdownMenuItem(
+                            text = { Text(text = filter, color = Color.Black) },
+                            onClick = {
+                                selectedFilter = filter
+                                expanded = false
+                            }
+                        )
+                    }
                 }
             }
         }
 
-        Box () {
-            Button(onClick = { expanded = true }, modifier = Modifier.width(150.dp),
-                colors = ButtonDefaults.buttonColors(contentColor = Color.Black, containerColor = Color.LightGray)) {
-                Text(text = "Trier par: $selectedFilter", fontSize = 10.sp)
-            }
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false },
-                modifier = Modifier.width(150.dp).background(Color.LightGray)) {
-                filterOptions.forEach { filter ->
-                    DropdownMenuItem(
-                        text = { Text(text = filter, color = Color.Black) },
-                        onClick = {
-                            selectedFilter = filter
-                            expanded = false
-                        }
-                    )
-                }
-            }
+        // Animation displayed on top of everything when a task is marked as done
+        if (showAnimation && taskDone != null) {
+            MarkAnimation(
+                onChange = { showAnimation = false },
+                navController = navController,
+                context = context,
+                task = taskDone
+            )
         }
     }
 }

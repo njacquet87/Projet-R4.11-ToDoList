@@ -19,8 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -38,13 +36,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.todoproject.ViewModel.TaskViewModel
-import com.example.todoproject.components.AppTextField
-import com.example.todoproject.components.DateInput
-import com.example.todoproject.components.Header
-import com.example.todoproject.components.IconButtonAction
-import com.example.todoproject.components.TimeSelectInput
+import com.example.todoproject.components.inputs.AppTextField
+import com.example.todoproject.components.inputs.DateAndHourInput
+import com.example.todoproject.components.utils.Header
+import com.example.todoproject.components.buttons.IconButtonAction
+import com.example.todoproject.components.inputs.PeriodicityInput
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 /**
  * Check if all the inputs are not blank to enable the "Valider" button
@@ -80,8 +77,8 @@ fun timeToString(time: TimePickerState?): String {
  * @param navController the navController to navigate between screens
  */
 @OptIn(ExperimentalMaterial3Api::class)
-fun addTask(viewModel: TaskViewModel, title: String, description: String, date: LocalDate?, hours: TimePickerState?, navController: NavController) {
-    viewModel.addTask(title, description, date.toString(), timeToString(hours))
+fun addTask(viewModel: TaskViewModel, title: String, description: String, date: LocalDate?, hours: TimePickerState?, periodicity: String, navController: NavController) {
+    viewModel.addTask(title, description, date.toString(), timeToString(hours), periodicity)
     navController.navigate("home")
 }
 
@@ -94,10 +91,12 @@ fun addTask(viewModel: TaskViewModel, title: String, description: String, date: 
 @Composable
 fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
 
-    var isChecked by remember { mutableStateOf(false) }
+    var isCheckedDateAndHoursInput by remember { mutableStateOf(false) }
+    var isCheckedPeriodicityInput by remember { mutableStateOf(false) }
 
     var selectedDate: LocalDate? by remember { mutableStateOf(null) }
     var time: TimePickerState? by remember { mutableStateOf(null) }
+    var periodicity: String by remember { mutableStateOf("Aucune") }
 
     // header
     Header()
@@ -125,55 +124,29 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
 
             var title by remember { mutableStateOf("") }
 
-            AppTextField(value = title, onValueChange = { newText -> title = newText }, inputTitle = "Titre *", label = "Titre de la tache")
+            AppTextField(value = title, onValueChange = { newText -> title = newText }, inputTitle = "Titre *", label = "Titre de la tâche")
 
             var description by remember { mutableStateOf("") }
 
-            AppTextField(value = description, onValueChange = { newText -> description = newText }, inputTitle = "Description *", label = "Description de la tache")
+            AppTextField(value = description, onValueChange = { newText -> description = newText }, inputTitle = "Description *", label = "Description de la tâche")
 
-            Text(text = "Date et heure de fin de la tache", style = MaterialTheme.typography.labelLarge)
+            Text(text = "Date et heure de fin de la tâche", style = MaterialTheme.typography.labelLarge)
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Affihcer la sélection", fontSize = 10.sp)
+            DateAndHourInput(isChecked = isCheckedDateAndHoursInput, onCheckedChange = { isCheckedDateAndHoursInput = it },
+                selectedDate = selectedDate, onDateSelected = { selectedDate = it },
+                time = time, onTimeSelected = { time = it })
 
-                Checkbox(checked = isChecked, onCheckedChange = { isChecked = it },
-                    colors = CheckboxDefaults.colors(checkedColor = Color.LightGray,
-                        uncheckedColor = Color.LightGray, checkmarkColor = Color.Black)) }
+            Spacer(Modifier.height(16.dp))
 
-            if (isChecked) {
+            Text(text = "Périodicitée de la tâche", style = MaterialTheme.typography.labelLarge)
 
-                Text(text = "Cliquez sur les icones pour sélectionner la date et l'heure", fontSize = 10.sp)
+            PeriodicityInput(isChecked = isCheckedPeriodicityInput, onCheckedChange = { isCheckedPeriodicityInput = it },
+                periodicity, onPeriodicitySelected = { periodicity = it })
 
-                Row(modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround) {
-                    DateInput(onDateSelected = { newDate -> selectedDate = newDate })
-                    TimeSelectInput(onConfirm = { newTime -> time = newTime }, enabled = selectedDate != null)
-                }
-
-                Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
-                        .background(Color.LightGray, RoundedCornerShape(8.dp)).padding(8.dp)) {
-                    if (selectedDate != null) {
-                        Text(text = "Date de fin de tache : ${selectedDate.toString()}")
-                    } else {
-                        Text(text = "Aucune date sélectionnée", fontSize = 13.sp)
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
-                        .background(Color.LightGray, RoundedCornerShape(8.dp)).padding(8.dp)) {
-                    if (time != null) {
-                        // the !! operator are used to assert that the time variable is not null
-                        Text(text = "Heure de fin de tache : ${time!!.hour}:${time!!.minute}")
-                    } else {
-                        Text(text = "Aucune heure sélectionnée", fontSize = 13.sp)
-                    }
-                }
-            }
+            Spacer(Modifier.height(20.dp))
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                Button(onClick = {addTask(viewModel, title, description, selectedDate, time, navController)},
+                Button(onClick = {addTask(viewModel, title, description, selectedDate, time, periodicity,navController)},
                     colors = ButtonDefaults.buttonColors(contentColor = Color.Black, containerColor = Color.LightGray,
                         disabledContainerColor = Color(170, 0, 0, 255)
                     ),

@@ -1,55 +1,37 @@
 package com.example.todoproject.workers
 
 import android.Manifest
-import android.R
 import android.content.Context
 import android.content.pm.PackageManager
-import androidx.annotation.RequiresPermission
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.example.todoproject.NotificationHelper
 import com.example.todoproject.data.OfflineTaskRepository
 import com.example.todoproject.data.TaskDatabase
-import com.example.todoproject.data.TaskEntity
-import kotlin.collections.forEach
-import kotlin.random.Random
+import kotlinx.coroutines.flow.first
 
+suspend fun checkTasksAndNotify(context: Context, repository: OfflineTaskRepository): Boolean {
 
-object NotificationHelper {
-
-    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-    fun showNotification(context: Context, title: String) {
-
-        val notification = NotificationCompat.Builder(context, "task_channel")
-            .setSmallIcon(R.drawable.ic_dialog_alert)
-            .setContentTitle("Tâche en retard")
-            .setContentText("$title est en retard")
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .build()
-
-        NotificationManagerCompat.from(context)
-            .notify(Random.nextInt(), notification)
-    }
-}
-
-suspend fun checkTasksAndNotify(context: Context, repository: OfflineTaskRepository) : Boolean {
-
-    val tasks = repository.getTasksSortedByStatus("En cours") as List<TaskEntity>
+    // Collect the Flow to get the actual list with .first()
+    val tasks = repository.getTasksSortedByStatus("En cours").first()
 
     return try {
         tasks.forEach { task ->
-            if (task.isLate()) {
+            if (task.isLate() && task.periodicity == "Aucune" && ContextCompat.checkSelfPermission(context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED) {
                 repository.markTaskAsLate(task.id)
-                if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    NotificationHelper.showNotification(context, task.title)
-                }
+                NotificationHelper.showNotification(context, "Tâche en retard", "${task.title} est en retard", android.R.drawable.ic_dialog_alert)
+            } else if (task.isLate() && task.periodicity != "Aucune" && ContextCompat.checkSelfPermission(context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED) {
+                task.changeDate(task, repository)
+                NotificationHelper.showNotification(context, "Date changée", "La date de ${task.title} a été changée", android.R.drawable.ic_dialog_info)
             }
         }
         true
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         false
     }
 }
