@@ -23,11 +23,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/**
+ * Reusable function to display a checkbox to show or hide the periodicity input field.
+ * The periodicity input field is displayed only if the checkbox is checked.
+ * The periodicity input field is used to select the periodicity of the task.
+ * @param isChecked the state of the checkbox
+ * @param onCheckedChange the action to perform when the state of the checkbox changes
+ * @param periodicity the selected periodicity, can be null if no periodicity is selected
+ * @param onPeriodicitySelected the action to perform when a periodicity is selected
+ */
 @Composable
-fun PeriodicityInput(isChecked: Boolean, onCheckedChange: (Boolean) -> Unit ) {
+fun PeriodicityInput(isChecked: Boolean, onCheckedChange: (Boolean) -> Unit,
+                     periodicity: String, onPeriodicitySelected: (String) -> Unit) {
 
     var expanded by remember { mutableStateOf(false) }
-    var selectedPeriocicity by remember { mutableStateOf("Aucune") }
 
     val periodicityOptions = listOf("Aucune", "Quotidienne", "Hebdomadaire", "Mensuelle")
 
@@ -48,14 +57,14 @@ fun PeriodicityInput(isChecked: Boolean, onCheckedChange: (Boolean) -> Unit ) {
                         contentColor = Color.Black,
                         containerColor = Color.LightGray
                     )) {
-                    Text(text = selectedPeriocicity, fontSize = 10.sp)
+                    Text(text = periodicity, fontSize = 10.sp)
                 }
                 DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false },
                     modifier = Modifier.width(125.dp).background(Color.LightGray)) {
                     periodicityOptions.forEach { option ->
                         DropdownMenuItem(text = { Text(text = option, color = Color.Black, fontSize = 10.sp) },
                             onClick = {
-                                selectedPeriocicity = option
+                                onPeriodicitySelected(option)
                                 expanded = false
                             }
                         )

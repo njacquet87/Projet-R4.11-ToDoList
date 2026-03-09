@@ -108,24 +108,24 @@ fun isTimeSelectEnabled(selectedDate: LocalDate?, task: TaskEntity): Boolean {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 fun updateTask(viewModel: TaskViewModel, title: String, description: String, date: LocalDate?,
-               hours: TimePickerState?, status: String, taskId: Int, navController: NavController) {
+               hours: TimePickerState?, periodicity: String,status: String, taskId: Int, navController: NavController) {
 
     if (date != null && hours != null) {
         var now = LocalDateTime.now()
         var dateToCompare = LocalDateTime.of(date.year, date.month, date.dayOfMonth, hours.hour, hours.minute)
 
         if (status == "En cours" && dateToCompare.isBefore(now)) {
-            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), "En retard")
+            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, "En retard")
             navController.navigate("detail/${taskId}")
         } else if (status == "En retard" && dateToCompare.isAfter(now)) {
-            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), "En cours")
+            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, "En cours")
             navController.navigate("detail/${taskId}")
         } else {
-            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), status)
+            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, status)
             navController.navigate("detail/${taskId}")
         }
     } else {
-        viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), status)
+        viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, status)
         navController.navigate("detail/${taskId}")
     }
 }
@@ -142,6 +142,15 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
     // Pre-fill with existing task values
     var selectedDate: LocalDate? by remember(task) { mutableStateOf(dateToLocalDate(task?.date)) }
     var time: TimePickerState? by remember(task) { mutableStateOf(timeToTimePickerState(task?.hours)) }
+    var periodicity: String by remember(task) { mutableStateOf(task?.periodicity ?: "Aucune") }
+
+    // Auto-open sections if the task already has values
+    if (task != null && task.date != "null" && !isCheckedDateAndHoursInput) {
+        isCheckedDateAndHoursInput = true
+    }
+    if (task != null && task.periodicity != "Aucune" && !isCheckedPeriodicityInput) {
+        isCheckedPeriodicityInput = true
+    }
 
     Header()
 
@@ -180,7 +189,7 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
 
                 Text(text = "Date et heure de fin de la tâche", style = MaterialTheme.typography.labelLarge)
 
-                DateAndHourInput(isChecked = task.date != "null" || task.hours != "null", onCheckedChange = { isCheckedDateAndHoursInput = it },
+                DateAndHourInput(isChecked = isCheckedDateAndHoursInput, onCheckedChange = { isCheckedDateAndHoursInput = it },
                     selectedDate = selectedDate, onDateSelected = { selectedDate = it },
                     time = time, onTimeSelected = { time = it })
 
@@ -188,13 +197,14 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
 
                 Text(text = "Périodicitée de la tâche", style = MaterialTheme.typography.labelLarge)
 
-                PeriodicityInput(false, onCheckedChange = { isCheckedPeriodicityInput = it })
+                PeriodicityInput(isChecked = isCheckedPeriodicityInput, onCheckedChange = { isCheckedPeriodicityInput = it },
+                    periodicity = periodicity, onPeriodicitySelected = { periodicity = it })
 
                 Spacer(Modifier.height(20.dp))
 
                 Row(modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center) {
-                    Button(onClick = {updateTask(viewModel, title, description, selectedDate, time, task.status, taskId, navController)},
+                    Button(onClick = { updateTask(viewModel, title, description, selectedDate, time, periodicity, task.status, taskId, navController) },
                         colors = ButtonDefaults.buttonColors(contentColor = Color.Black, containerColor = Color.LightGray,
                             disabledContainerColor = Color(170, 0, 0, 255)),
                         enabled = areAllInputNotBlank(title, description)) {

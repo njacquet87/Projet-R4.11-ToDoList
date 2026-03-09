@@ -77,8 +77,8 @@ fun timeToString(time: TimePickerState?): String {
  * @param navController the navController to navigate between screens
  */
 @OptIn(ExperimentalMaterial3Api::class)
-fun addTask(viewModel: TaskViewModel, title: String, description: String, date: LocalDate?, hours: TimePickerState?, navController: NavController) {
-    viewModel.addTask(title, description, date.toString(), timeToString(hours))
+fun addTask(viewModel: TaskViewModel, title: String, description: String, date: LocalDate?, hours: TimePickerState?, periodicity: String, navController: NavController) {
+    viewModel.addTask(title, description, date.toString(), timeToString(hours), periodicity)
     navController.navigate("home")
 }
 
@@ -96,6 +96,7 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
 
     var selectedDate: LocalDate? by remember { mutableStateOf(null) }
     var time: TimePickerState? by remember { mutableStateOf(null) }
+    var periodicity: String by remember { mutableStateOf("Aucune") }
 
     // header
     Header()
@@ -139,12 +140,13 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
 
             Text(text = "Périodicitée de la tâche", style = MaterialTheme.typography.labelLarge)
 
-            PeriodicityInput(isChecked = isCheckedPeriodicityInput, onCheckedChange = { isCheckedPeriodicityInput = it })
+            PeriodicityInput(isChecked = isCheckedPeriodicityInput, onCheckedChange = { isCheckedPeriodicityInput = it },
+                periodicity, onPeriodicitySelected = { periodicity = it })
 
             Spacer(Modifier.height(20.dp))
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                Button(onClick = {addTask(viewModel, title, description, selectedDate, time, navController)},
+                Button(onClick = {addTask(viewModel, title, description, selectedDate, time, periodicity,navController)},
                     colors = ButtonDefaults.buttonColors(contentColor = Color.Black, containerColor = Color.LightGray,
                         disabledContainerColor = Color(170, 0, 0, 255)
                     ),

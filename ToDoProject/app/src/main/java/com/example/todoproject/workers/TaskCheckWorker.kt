@@ -20,7 +20,7 @@ import kotlin.random.Random
 object NotificationHelper {
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-    fun showNotification(context: Context, title: String) {
+    fun showNotificationLate(context: Context, title: String) {
 
         // Creates an Intent that opens MainActivity when the notification is tapped
         val intent = Intent(context, MainActivity::class.java).apply {
@@ -41,6 +41,29 @@ object NotificationHelper {
         NotificationManagerCompat.from(context)
             .notify(Random.nextInt(), notification)
     }
+
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+    fun showNotificationChange(context: Context, title: String) {
+
+        // Creates an Intent that opens MainActivity when the notification is tapped
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+
+        val notification = NotificationCompat.Builder(context, "task_channel")
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setContentTitle("Date changée")
+            .setContentText("La date de $title a été changée")
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
+
+        NotificationManagerCompat.from(context)
+            .notify(Random.nextInt(), notification)
+    }
 }
 
 suspend fun checkTasksAndNotify(context: Context, repository: OfflineTaskRepository): Boolean {
@@ -50,15 +73,16 @@ suspend fun checkTasksAndNotify(context: Context, repository: OfflineTaskReposit
 
     return try {
         tasks.forEach { task ->
-            if (task.isLate()) {
+            if (task.isLate() && task.periodicity == "Aucune" && ContextCompat.checkSelfPermission(context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED) {
                 repository.markTaskAsLate(task.id)
-                if (ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.POST_NOTIFICATIONS
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    NotificationHelper.showNotification(context, task.title)
-                }
+                NotificationHelper.showNotificationLate(context, task.title)
+            } else if (task.isLate() && task.periodicity != "Aucune" && ContextCompat.checkSelfPermission(context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED) {
+                task.changeDate(task, repository)
+                NotificationHelper.showNotificationChange(context, task.title)
             }
         }
         true

@@ -11,7 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  * This class defines the database configuration.
  * The version in the @Database annotation should be incremented whenever the database schema is changed.
  */
-@Database(entities = [TaskEntity::class], version = 2, exportSchema = false)
+@Database(entities = [TaskEntity::class], version = 3, exportSchema = false)
 abstract class TaskDatabase : RoomDatabase() {
 
     abstract fun taskDao(): TaskDao
@@ -25,6 +25,7 @@ abstract class TaskDatabase : RoomDatabase() {
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, TaskDatabase::class.java, "task_database")
                     .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_2_3)
                     .build()
                     .also { Instance = it }
             }
@@ -36,5 +37,12 @@ abstract class TaskDatabase : RoomDatabase() {
                 database.execSQL("ALTER TABLE Tasks ADD COLUMN hours TEXT NOT NULL DEFAULT ''")
             }
         }
+
+        val MIGRATION_2_3 = object : androidx.room.migration.Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE Tasks ADD COLUMN periodicity TEXT NOT NULL DEFAULT 'Aucune'")
+            }
+        }
+
     }
 }

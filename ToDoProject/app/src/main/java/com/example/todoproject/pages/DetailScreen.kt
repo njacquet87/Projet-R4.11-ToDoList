@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -57,7 +56,6 @@ import com.example.todoproject.components.popup.DeletePopUp
 import com.example.todoproject.components.animations.FireworksAnimation
 import com.example.todoproject.data.TaskEntity
 import kotlinx.coroutines.delay
-import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
 
@@ -164,16 +162,16 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                             TaskDetail("Description : ", task.description)
 
                             // date
-                            val date = task.date
-                            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-
-                            TaskDetail("Date : ", date.format(formatter))
+                            TaskDetail("Date : ", task.date)
 
                             // hours
                             TaskDetail("Heure : ", task.hours)
 
                             // Status
                             TaskDetail("Status : ", task.status)
+
+                            // Periodicity
+                            TaskDetail("Périodicité : ", task.periodicity)
 
                             Button(onClick = {
                                     markAsDone(viewModel, task)
