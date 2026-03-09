@@ -40,6 +40,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.todoproject.components.animations.MarkAnimation
 import com.example.todoproject.components.utils.AddTask
 import com.example.todoproject.components.popup.DeletePopUp
 import com.example.todoproject.components.utils.Header
@@ -56,8 +57,6 @@ import kotlin.collections.emptyList
  */
 @Composable
 fun RequestNotificationPermission() {
-
-    val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission(),
@@ -95,6 +94,9 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
     var selectedFilter by remember { mutableStateOf("Toutes") }
     var showDeletePopUp by remember { mutableStateOf(false) }
     var taskToDelete by remember { mutableStateOf<TaskEntity?>(null) }
+    var showAnimation by remember { mutableStateOf(false) }
+    var taskDone by remember { mutableStateOf<TaskEntity?>(null) }
+    val context = LocalContext.current
 
     // Use collectAsState to observe the tasks flow from the viewModel and update the UI when the data changes.
     // The when statement is used to filter the tasks based on the selected filter.
@@ -140,11 +142,15 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
                     }
                 } else {
                     for (task in tasks) {
-                        TaskItem(
-                            task, onDetailClick = { navController.navigate("detail/${task.id}") },
+                        TaskItem(task, onDetailClick = { navController.navigate("detail/${task.id}") },
                             onDeleteClick = { showDeletePopUp = true
                                             taskToDelete = task},
-                            onUpdateClick = { navController.navigate("update/${task.id}") })
+                            onUpdateClick = { navController.navigate("update/${task.id}") },
+                            viewModel = viewModel,
+                            onTaskDone = { doneTask ->
+                                taskDone = doneTask
+                                showAnimation = true
+                            })
                     }
                 }
             }
@@ -181,6 +187,16 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
                     }
                 }
             }
+        }
+
+        // Animation displayed on top of everything when a task is marked as done
+        if (showAnimation && taskDone != null) {
+            MarkAnimation(
+                onChange = { showAnimation = false },
+                navController = navController,
+                context = context,
+                task = taskDone
+            )
         }
     }
 }
