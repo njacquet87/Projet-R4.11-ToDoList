@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -67,28 +68,32 @@ fun TaskItem(task: TaskEntity, onDetailClick: () -> Unit, onDeleteClick: () -> U
             Text(text = task.status, style = MaterialTheme.typography.bodySmall, color = color)
         }
 
-        Row {
-            Checkbox(checked = isChecked, onCheckedChange = {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Row {
+                Checkbox(checked = isChecked, onCheckedChange = {
                     if (!isChecked) {
                         viewModel.markTaskAsDone(task.id)
                         isChecked = true
                         onTaskDone(task)
                     }
                 },
-                colors = CheckboxDefaults.colors(
-                    checkedColor = Color(0, 170, 0, 255),
-                    uncheckedColor = Color.DarkGray, checkmarkColor = Color.Black
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = Color(0, 170, 0, 255),
+                        uncheckedColor = Color.DarkGray, checkmarkColor = Color.Black
+                    )
                 )
-            )
 
-            // Detail
-            IconButtonAction(Icons.Filled.Visibility, "Détail de la tâche", onClick = onDetailClick)
+                // Detail
+                IconButtonAction(Icons.Filled.Visibility, "Détail de la tâche", onClick = onDetailClick)
 
-            // Update
-            IconButtonAction(Icons.Filled.Edit, "Modification de la tâche", onClick = onUpdateClick)
+                // Update
+                IconButtonAction(Icons.Filled.Edit, "Modification de la tâche", onClick = onUpdateClick)
 
-            // Delete
-            IconButtonAction(Icons.Filled.Delete, "Suppression de la tâche", onClick = onDeleteClick, color = red)
+                // Delete
+                IconButtonAction(Icons.Filled.Delete, "Suppression de la tâche", onClick = onDeleteClick, color = red)
+            }
+
+            Text(text = "Priorité : ${task.priority}", style = MaterialTheme.typography.bodySmall)
         }
     }
 }
