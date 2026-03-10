@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +20,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,6 +29,7 @@ import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -33,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -83,17 +88,6 @@ fun timeToTimePickerState(time: String?): TimePickerState? {
 }
 
 /**
- * Check if the time selection should be enabled based on the selected date and the task's date and hours
- * @param selectedDate the currently selected date, or null if no date is selected
- * @param task the task for which to check the time selection
- * @return true if the time selection should be enabled, false otherwise
- */
-@Composable
-fun isTimeSelectEnabled(selectedDate: LocalDate?, task: TaskEntity): Boolean {
-    return selectedDate != null || task.date != "null" || task.hours != "null"
-}
-
-/**
  * Update a task in the TaskViewModel and navigate back to the HomeScreen
  * The status of the task is updated depending on the selected date and the current date.
  * Also work if the hours is modifyed without modifying the date, or if the date is modified without modifying the hours.
@@ -108,24 +102,24 @@ fun isTimeSelectEnabled(selectedDate: LocalDate?, task: TaskEntity): Boolean {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 fun updateTask(viewModel: TaskViewModel, title: String, description: String, date: LocalDate?,
-               hours: TimePickerState?, periodicity: String,status: String, taskId: Int, navController: NavController) {
+               hours: TimePickerState?, periodicity: String, priority: Int, status: String, taskId: Int, navController: NavController) {
 
     if (date != null && hours != null) {
         var now = LocalDateTime.now()
         var dateToCompare = LocalDateTime.of(date.year, date.month, date.dayOfMonth, hours.hour, hours.minute)
 
         if (status == "En cours" && dateToCompare.isBefore(now)) {
-            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, "En retard")
+            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, priority, "En retard")
             navController.navigate("detail/${taskId}")
         } else if (status == "En retard" && dateToCompare.isAfter(now)) {
-            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, "En cours")
+            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, priority, "En cours")
             navController.navigate("detail/${taskId}")
         } else {
-            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, status)
+            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, priority, status)
             navController.navigate("detail/${taskId}")
         }
     } else {
-        viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, status)
+        viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, priority, status)
         navController.navigate("detail/${taskId}")
     }
 }
@@ -143,6 +137,10 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
     var selectedDate: LocalDate? by remember(task) { mutableStateOf(dateToLocalDate(task?.date)) }
     var time: TimePickerState? by remember(task) { mutableStateOf(timeToTimePickerState(task?.hours)) }
     var periodicity: String by remember(task) { mutableStateOf(task?.periodicity ?: "Aucune") }
+    var priority: Int by remember(task) { mutableIntStateOf(task?.priority ?: 3) }
+
+    val priorityOptions = listOf(3, 2, 1)
+    var expanded by remember { mutableStateOf(false) }
 
     // Auto-open sections if the task already has values
     if (task != null && task.date != "null" && !isCheckedDateAndHoursInput) {
@@ -200,11 +198,43 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                 PeriodicityInput(isChecked = isCheckedPeriodicityInput, onCheckedChange = { isCheckedPeriodicityInput = it },
                     periodicity = periodicity, onPeriodicitySelected = { periodicity = it })
 
+                Text(text = "Priorité de la tâche", style = MaterialTheme.typography.labelLarge)
+
+                Row(Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceAround) {
+                    Column() {
+                        Text(text = "1 : Priorité haute", fontSize = 10.sp)
+                        Text(text = "2 : Priorité moyenne", fontSize = 10.sp)
+                        Text(text = " 3 : Priorité basse", fontSize = 10.sp)
+                    }
+
+                    Box() {
+                        Button(onClick = { expanded = true }, modifier = Modifier.width(50.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                contentColor = Color.Black,
+                                containerColor = Color.LightGray
+                            )) {
+                            Text(text = priority.toString(), fontSize = 10.sp)
+                        }
+                        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false },
+                            modifier = Modifier.width(50.dp).background(Color.LightGray)) {
+                            priorityOptions.forEach { option ->
+                                DropdownMenuItem(text = { Text(text = option.toString(), color = Color.Black,
+                                    fontSize = 10.sp, textAlign = TextAlign.Center) },
+                                    onClick = {
+                                        priority = option
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
                 Spacer(Modifier.height(20.dp))
 
                 Row(modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center) {
-                    Button(onClick = { updateTask(viewModel, title, description, selectedDate, time, periodicity, task.status, taskId, navController) },
+                    Button(onClick = { updateTask(viewModel, title, description, selectedDate, time, periodicity, priority, task.status, taskId, navController) },
                         colors = ButtonDefaults.buttonColors(contentColor = Color.Black, containerColor = Color.LightGray,
                             disabledContainerColor = Color(170, 0, 0, 255)),
                         enabled = areAllInputNotBlank(title, description)) {
