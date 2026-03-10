@@ -131,6 +131,9 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                             // Periodicity
                             TaskDetail("Périodicité : ", task.periodicity)
 
+                            // Priority
+                            TaskDetail("Priorité : ", task.priority.toString())
+
                             Button(onClick = {
                                     markAsDone(viewModel, task)
                                     showPopup = true

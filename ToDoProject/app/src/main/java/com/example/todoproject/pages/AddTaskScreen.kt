@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,12 +20,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -77,8 +82,8 @@ fun timeToString(time: TimePickerState?): String {
  * @param navController the navController to navigate between screens
  */
 @OptIn(ExperimentalMaterial3Api::class)
-fun addTask(viewModel: TaskViewModel, title: String, description: String, date: LocalDate?, hours: TimePickerState?, periodicity: String, navController: NavController) {
-    viewModel.addTask(title, description, date.toString(), timeToString(hours), periodicity)
+fun addTask(viewModel: TaskViewModel, title: String, description: String, date: LocalDate?, hours: TimePickerState?, periodicity: String, priority: Int,navController: NavController) {
+    viewModel.addTask(title, description, date.toString(), timeToString(hours), periodicity, priority)
     navController.navigate("home")
 }
 
@@ -97,6 +102,10 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
     var selectedDate: LocalDate? by remember { mutableStateOf(null) }
     var time: TimePickerState? by remember { mutableStateOf(null) }
     var periodicity: String by remember { mutableStateOf("Aucune") }
+    var priority: Int by remember { mutableIntStateOf(1) }
+
+    val priorityOptions = listOf(3, 2, 1)
+    var expanded by remember { mutableStateOf(false) }
 
     // header
     Header()
@@ -143,10 +152,44 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
             PeriodicityInput(isChecked = isCheckedPeriodicityInput, onCheckedChange = { isCheckedPeriodicityInput = it },
                 periodicity, onPeriodicitySelected = { periodicity = it })
 
+            Spacer(Modifier.height(16.dp))
+
+            Text(text = "Priorité de la tâche", style = MaterialTheme.typography.labelLarge)
+
+            Row(Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceAround) {
+                Column() {
+                    Text(text = "1 : Priorité haute", fontSize = 10.sp)
+                    Text(text = "2 : Priorité moyenne", fontSize = 10.sp)
+                    Text(text = " 3 : Priorité basse", fontSize = 10.sp)
+                }
+
+                Box() {
+                    Button(onClick = { expanded = true }, modifier = Modifier.width(50.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = Color.Black,
+                            containerColor = Color.LightGray
+                        )) {
+                        Text(text = priority.toString(), fontSize = 10.sp)
+                    }
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false },
+                        modifier = Modifier.width(50.dp).background(Color.LightGray)) {
+                        priorityOptions.forEach { option ->
+                            DropdownMenuItem(text = { Text(text = option.toString(), color = Color.Black,
+                                fontSize = 10.sp, textAlign = TextAlign.Center) },
+                                onClick = {
+                                    priority = option
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
             Spacer(Modifier.height(20.dp))
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                Button(onClick = {addTask(viewModel, title, description, selectedDate, time, periodicity,navController)},
+                Button(onClick = {addTask(viewModel, title, description, selectedDate, time, periodicity, priority, navController)},
                     colors = ButtonDefaults.buttonColors(contentColor = Color.Black, containerColor = Color.LightGray,
                         disabledContainerColor = Color(170, 0, 0, 255)
                     ),
@@ -154,7 +197,6 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
                     Text(text = "Valider", color = Color.Black)
                 }
             }
-
         }
     }
 }
