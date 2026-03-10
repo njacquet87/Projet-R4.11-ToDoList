@@ -14,20 +14,32 @@ import kotlinx.coroutines.flow.first
 suspend fun checkTasksAndNotify(context: Context, repository: OfflineTaskRepository): Boolean {
 
     // Collect the Flow to get the actual list with .first()
-    val tasks = repository.getTasksSortedByStatus("En cours").first()
+    val tasks = repository.getAllTasks().first()
 
     return try {
+        val hasPermission = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.POST_NOTIFICATIONS
+        ) == PackageManager.PERMISSION_GRANTED
+
         tasks.forEach { task ->
-            if (task.isLate() && task.periodicity == "Aucune" && ContextCompat.checkSelfPermission(context,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED) {
+            if (task.isLate() && task.status == "En cours" && task.periodicity == "Aucune") {
+                // Task is late with no periodicity → mark as late
                 repository.markTaskAsLate(task.id)
-                NotificationHelper.showNotification(context, "Tâche en retard", "${task.title} est en retard", android.R.drawable.ic_dialog_alert)
-            } else if (task.isLate() && task.periodicity != "Aucune" && ContextCompat.checkSelfPermission(context,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED) {
+                if (hasPermission) {
+                    NotificationHelper.showNotification(context, "Tâche en retard", "${task.title} est en retard", android.R.drawable.ic_dialog_alert)
+                }
+            } else if (task.isLate() && task.status == "En cours" && task.periodicity != "Aucune") {
+                // Task is late with periodicity → change the date and reset to "En cours"
                 task.changeDate(task, repository)
-                NotificationHelper.showNotification(context, "Date changée", "La date de ${task.title} a été changée", android.R.drawable.ic_dialog_info)
+                if (hasPermission) {
+                    NotificationHelper.showNotification(context, "Date changée", "La date de ${task.title} a été changée", android.R.drawable.ic_dialog_info)
+                }
+            } else if (task.status == "Réalisé" && task.periodicity != "Aucune") {
+                // Task is done with periodicity → change the date and reset to "En cours"
+                task.changeDate(task, repository)
+                if (hasPermission) {
+                    NotificationHelper.showNotification(context, "Nouvelle occurrence", "${task.title} a une nouvelle échéance", android.R.drawable.ic_dialog_info)
+                }
             }
         }
         true

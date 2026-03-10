@@ -38,7 +38,10 @@ data class TaskEntity(
     val status: String,
 
     @ColumnInfo(name = "periodicity")
-    val periodicity: String = "Aucune"
+    val periodicity: String = "Aucune",
+
+    @ColumnInfo(name = "priority")
+    val priority: Int = 3
 ) {
     fun isLate(): Boolean {
         if (status != "En cours") {
