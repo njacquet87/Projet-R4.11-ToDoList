@@ -2,8 +2,9 @@ package com.example.todoproject.ViewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.todoproject.data.TaskEntity
-import com.example.todoproject.data.TaskRepository
+import com.example.todoproject.data.entities.TaskEntity
+import com.example.todoproject.data.repositories.TaskRepository
+import com.example.todoproject.data.repositories.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
  * A ViewModel interacts with the Repository to perform operations on an entity (TaskEntity)
  * and provides data to the UI.
  */
-class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
+class TaskViewModel(private val repository: TaskRepository, private val userRepository: UserRepository) : ViewModel() {
 
     val tasks: Flow<List<TaskEntity>> = repository.getAllTasks()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -60,6 +61,7 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
     fun markTaskAsDone(id: Int?) {
         viewModelScope.launch {
             repository.markTaskAsDone(id)
+            userRepository.incrementTasksCompleted()
         }
     }
 

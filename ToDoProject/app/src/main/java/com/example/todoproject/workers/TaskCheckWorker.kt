@@ -7,7 +7,7 @@ import androidx.core.content.ContextCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.todoproject.NotificationHelper
-import com.example.todoproject.data.OfflineTaskRepository
+import com.example.todoproject.data.repositories.OfflineTaskRepository
 import com.example.todoproject.data.TaskDatabase
 import kotlinx.coroutines.flow.first
 

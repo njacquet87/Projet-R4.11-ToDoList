@@ -42,12 +42,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.todoproject.ViewModel.TaskViewModel
+import com.example.todoproject.ViewModel.UserViewModel
 import com.example.todoproject.components.inputs.AppTextField
 import com.example.todoproject.components.utils.Header
 import com.example.todoproject.components.buttons.IconButtonAction
 import com.example.todoproject.components.inputs.DateAndHourInput
 import com.example.todoproject.components.inputs.PeriodicityInput
-import com.example.todoproject.data.TaskEntity
+import com.example.todoproject.data.entities.TaskEntity
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -126,7 +127,7 @@ fun updateTask(viewModel: TaskViewModel, title: String, description: String, dat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId : Int) {
+fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId : Int, userViewModel: UserViewModel) {
 
     var isCheckedDateAndHoursInput by remember { mutableStateOf(false) }
     var isCheckedPeriodicityInput by remember { mutableStateOf(false) }
@@ -150,7 +151,7 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
         isCheckedPeriodicityInput = true
     }
 
-    Header()
+    Header(userViewModel)
 
     Column(Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {

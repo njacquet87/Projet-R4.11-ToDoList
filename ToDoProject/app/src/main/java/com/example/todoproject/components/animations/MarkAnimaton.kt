@@ -24,7 +24,7 @@ import androidx.compose.ui.window.Popup
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.example.todoproject.NotificationHelper
-import com.example.todoproject.data.TaskEntity
+import com.example.todoproject.data.entities.TaskEntity
 import kotlinx.coroutines.delay
 
 /**

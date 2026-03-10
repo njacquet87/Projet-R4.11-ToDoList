@@ -1,5 +1,8 @@
-package com.example.todoproject.data
+package com.example.todoproject.data.repositories
 
+import com.example.todoproject.data.entities.TaskEntity
+import com.example.todoproject.data.repositories.TaskRepository
+import com.example.todoproject.data.daos.TaskDao
 import kotlinx.coroutines.flow.Flow
 
 /**

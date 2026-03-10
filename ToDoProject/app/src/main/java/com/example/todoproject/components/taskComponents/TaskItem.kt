@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.todoproject.ViewModel.TaskViewModel
 import com.example.todoproject.components.buttons.IconButtonAction
-import com.example.todoproject.data.TaskEntity
+import com.example.todoproject.data.entities.TaskEntity
 
 /**
  * Reusable function to display a task in the list of tasks on the HomeScreen
@@ -63,7 +63,7 @@ fun TaskItem(task: TaskEntity, onDetailClick: () -> Unit, onDeleteClick: () -> U
             .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
 
-        androidx.compose.foundation.layout.Column {
+        Column {
             Text(text = task.title, style = MaterialTheme.typography.bodyMedium)
             Text(text = task.status, style = MaterialTheme.typography.bodySmall, color = color)
         }

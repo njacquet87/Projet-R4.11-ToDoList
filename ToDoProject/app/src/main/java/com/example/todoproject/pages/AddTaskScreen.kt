@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.todoproject.ViewModel.TaskViewModel
+import com.example.todoproject.ViewModel.UserViewModel
 import com.example.todoproject.components.inputs.AppTextField
 import com.example.todoproject.components.inputs.DateAndHourInput
 import com.example.todoproject.components.utils.Header
@@ -94,7 +95,7 @@ fun addTask(viewModel: TaskViewModel, title: String, description: String, date: 
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
+fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel, userViewModel: UserViewModel) {
 
     var isCheckedDateAndHoursInput by remember { mutableStateOf(false) }
     var isCheckedPeriodicityInput by remember { mutableStateOf(false) }
@@ -108,7 +109,7 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel) {
     var expanded by remember { mutableStateOf(false) }
 
     // header
-    Header()
+    Header(userViewModel)
 
     Column(Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
