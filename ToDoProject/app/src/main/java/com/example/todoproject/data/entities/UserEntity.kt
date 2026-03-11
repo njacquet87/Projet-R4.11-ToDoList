@@ -1,10 +1,6 @@
 package com.example.todoproject.data.entities
 
-import android.graphics.drawable.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -23,23 +19,30 @@ data class UserEntity(
     @ColumnInfo(name = "nbrOfTaskCompleted")
     val nbrOfTaskCompleted: Int = 0,
 ) {
+    // Colors are defined as companion object constants to avoid Room trying to persist them
+    companion object {
+        val bronze  = Color(205, 127, 50,  255)
+        val silver  = Color(192, 192, 192, 255)
+        val gold    = Color(255, 193, 7,   255)
+        val diamond = Color(76,  232, 255, 255)
+    }
 
     fun getBadge(): String {
         return when {
             nbrOfTaskCompleted >= 200 -> "Diamant"
             nbrOfTaskCompleted >= 100 -> "Or"
-            nbrOfTaskCompleted >= 50 -> "Argent"
-            nbrOfTaskCompleted >= 20 -> "Bronze"
+            nbrOfTaskCompleted >= 50  -> "Argent"
+            nbrOfTaskCompleted >= 20  -> "Bronze"
             else -> "Aucun"
         }
     }
 
     fun getBadgeColor(): Color {
         return when {
-            nbrOfTaskCompleted >= 200 -> Color(76, 232, 255, 255)
-            nbrOfTaskCompleted >= 100 -> Color(255, 193, 7, 255)
-            nbrOfTaskCompleted >= 50 -> Color(192, 192, 192, 255)
-            nbrOfTaskCompleted >= 20 -> Color(205, 127, 50, 255)
+            nbrOfTaskCompleted >= 200 -> diamond
+            nbrOfTaskCompleted >= 100 -> gold
+            nbrOfTaskCompleted >= 50  -> silver
+            nbrOfTaskCompleted >= 20  -> bronze
             else -> Color(0, 0, 0, 255)
         }
     }
