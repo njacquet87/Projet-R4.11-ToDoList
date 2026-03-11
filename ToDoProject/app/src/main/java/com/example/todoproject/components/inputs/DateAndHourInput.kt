@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
@@ -44,6 +45,8 @@ fun DateAndHourInput(isChecked: Boolean, onCheckedChange: (Boolean) -> Unit,
     selectedDate: LocalDate?, onDateSelected: (LocalDate?) -> Unit,
     time: TimePickerState?, onTimeSelected: (TimePickerState?) -> Unit) {
 
+    var checked by remember { mutableStateOf(false) }
+
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(text = "Afficher la sélection", fontSize = 10.sp)
 
@@ -53,12 +56,16 @@ fun DateAndHourInput(isChecked: Boolean, onCheckedChange: (Boolean) -> Unit,
 
     if (isChecked) {
 
-        Text(text = "Cliquez sur les icônes pour sélectionner la date et l'heure. " +
-                "Vous devez avoir rempli la date pour pouvoir remplir l'heure de fin de de la tâche"
-            , fontSize = 10.sp)
+        Text(
+            text = "Cliquez sur les icônes pour sélectionner la date et l'heure. " +
+                    "Vous devez avoir rempli la date pour pouvoir remplir l'heure de fin de de la tâche",
+            fontSize = 10.sp
+        )
 
-        Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
             DateInput(onDateSelected = { newDate -> onDateSelected(newDate) })
             TimeSelectInput(
                 onConfirm = { newTime -> onTimeSelected(newTime) },
@@ -85,5 +92,21 @@ fun DateAndHourInput(isChecked: Boolean, onCheckedChange: (Boolean) -> Unit,
                 Text(text = "Aucune heure sélectionnée", fontSize = 13.sp)
             }
         }
+
+        Row() {
+            Text(text = "Enlever la date et l'heure de fin de tâche", Modifier.width(125.dp), fontSize = 10.sp)
+            Checkbox(
+                checked = checked, onCheckedChange = {
+                    onDateSelected(null)
+                    onTimeSelected(null)
+                    checked = it
+                },
+                colors = CheckboxDefaults.colors(
+                    checkedColor = Color.LightGray,
+                    uncheckedColor = Color.LightGray, checkmarkColor = Color.Black
+                )
+            )
+        }
+
     }
 }
