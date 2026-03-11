@@ -39,9 +39,10 @@ import com.example.todoproject.components.taskComponents.TaskDetail
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import com.example.todoproject.ViewModel.UserViewModel
 import com.example.todoproject.components.animations.MarkAnimation
 import com.example.todoproject.components.popup.DeletePopUp
-import com.example.todoproject.data.TaskEntity
+import com.example.todoproject.data.entities.TaskEntity
 
 
 /**
@@ -62,7 +63,7 @@ fun markAsDone(viewModel: TaskViewModel, task: TaskEntity?) {
  * @param taskId the id of the task to display. The task is found from the mockTasks list using this id
  */
 @Composable
-fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId : Int) {
+fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId : Int, userViewModel: UserViewModel) {
 
     val task = viewModel.getTaskById(taskId).collectAsState(initial = null).value
     var showPopup by remember { mutableStateOf(false) }
@@ -73,7 +74,7 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
 
         Column(modifier = Modifier.fillMaxSize()) {
             // header
-            Header()
+            Header(userViewModel)
 
             Column(Modifier.fillMaxSize().padding(16.dp),
                 verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {

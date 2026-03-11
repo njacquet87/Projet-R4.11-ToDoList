@@ -1,8 +1,9 @@
-package com.example.todoproject.data
+package com.example.todoproject.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.todoproject.data.repositories.OfflineTaskRepository
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter

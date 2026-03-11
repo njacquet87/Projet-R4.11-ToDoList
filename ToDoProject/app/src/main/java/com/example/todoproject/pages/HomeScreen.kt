@@ -46,7 +46,8 @@ import com.example.todoproject.components.popup.DeletePopUp
 import com.example.todoproject.components.utils.Header
 import com.example.todoproject.components.taskComponents.TaskItem
 import com.example.todoproject.ViewModel.TaskViewModel
-import com.example.todoproject.data.TaskEntity
+import com.example.todoproject.ViewModel.UserViewModel
+import com.example.todoproject.data.entities.TaskEntity
 import kotlin.collections.emptyList
 
 
@@ -84,10 +85,11 @@ fun deleteTask(viewModel: TaskViewModel, task: TaskEntity) {
  * Display the home screen with a header and a list of tasks.
  * Also display a button to add a new task.
  * @param navController the navController to navigate between screens
- * @param viewModel the TaskViewModel to manage the tasks data
+ * @param taskViewModel the TaskViewModel to manage the tasks data
+ * @param userViewModel the UserViewModel to manage the user data
  */
 @Composable
-fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
+fun HomeScreen(navController: NavController, taskViewModel: TaskViewModel, userViewModel: UserViewModel) {
 
     RequestNotificationPermission()
     var expanded by remember { mutableStateOf(false) }
@@ -101,15 +103,15 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
     // Use collectAsState to observe the tasks flow from the viewModel and update the UI when the data changes.
     // The when statement is used to filter the tasks based on the selected filter.
     val tasks by when (selectedFilter) {
-        "Toutes" -> viewModel.tasks.collectAsState(initial = emptyList())
-        else -> viewModel.getTasksSortedByStatus(selectedFilter).collectAsState(initial = emptyList())
+        "Toutes" -> taskViewModel.tasks.collectAsState(initial = emptyList())
+        else -> taskViewModel.getTasksSortedByStatus(selectedFilter).collectAsState(initial = emptyList())
     }
 
     val filterOptions = listOf("Toutes", "En cours", "Réalisé", "En retard")
 
     Box(Modifier.fillMaxSize()) {
         //header
-        Header()
+        Header(userViewModel)
 
         // body
         Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.Center,
@@ -146,7 +148,7 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
                             onDeleteClick = { showDeletePopUp = true
                                             taskToDelete = task},
                             onUpdateClick = { navController.navigate("update/${task.id}") },
-                            viewModel = viewModel,
+                            viewModel = taskViewModel,
                             onTaskDone = { doneTask ->
                                 taskDone = doneTask
                                 showAnimation = true
@@ -158,7 +160,7 @@ fun HomeScreen(navController: NavController, viewModel: TaskViewModel) {
             if (showDeletePopUp && taskToDelete != null) {
                 DeletePopUp(onDismiss = { showDeletePopUp = false }, onConfirm = {
                         showDeletePopUp = false
-                        deleteTask(viewModel, taskToDelete!!) }
+                        deleteTask(taskViewModel, taskToDelete!!) }
                 )
             }
 

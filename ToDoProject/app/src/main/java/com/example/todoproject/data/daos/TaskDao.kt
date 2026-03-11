@@ -1,4 +1,4 @@
-package com.example.todoproject.data
+package com.example.todoproject.data.daos
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.todoproject.data.entities.TaskEntity
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -16,7 +17,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TaskDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.Companion.IGNORE)
     suspend fun insert(task: TaskEntity)
 
     @Update
