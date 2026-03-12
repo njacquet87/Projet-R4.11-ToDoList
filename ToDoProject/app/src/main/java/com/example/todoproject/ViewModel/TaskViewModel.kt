@@ -25,7 +25,7 @@ class TaskViewModel(private val repository: TaskRepository, private val userRepo
         return repository.getTaskById(id)
     }
 
-    fun addTask(title: String, description: String, date: String, hours: String, periodicity: String, priority: Int) {
+    fun addTask(title: String, description: String, date: String, hours: String, periodicity: String, priority: Int, imageUri: String?) {
         viewModelScope.launch {
             repository.insertTask(
                 TaskEntity(
@@ -35,13 +35,14 @@ class TaskViewModel(private val repository: TaskRepository, private val userRepo
                     hours = hours,
                     periodicity = periodicity,
                     priority = priority,
+                    imageUri = imageUri,
                     status = "En cours"
                 )
             )
         }
     }
 
-    fun updateTask(id: Int, title: String, description: String, date: String, hours: String, periodicity: String, priority: Int, status: String) {
+    fun updateTask(id: Int, title: String, description: String, date: String, hours: String, periodicity: String, priority: Int, status: String, imageUri: String?) {
         viewModelScope.launch {
             repository.updateTask(
                 TaskEntity(
@@ -52,6 +53,7 @@ class TaskViewModel(private val repository: TaskRepository, private val userRepo
                     hours = hours,
                     periodicity = periodicity,
                     priority = priority,
+                    imageUri = imageUri,
                     status = status
                 )
             )

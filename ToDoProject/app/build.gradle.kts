@@ -66,4 +66,7 @@ dependencies {
 
     // WorkManager dependency
     implementation("androidx.work:work-runtime-ktx:2.7.1")
+
+    //Pictures
+    implementation("io.coil-kt:coil-compose:2.6.0")
 }

@@ -1,5 +1,6 @@
 package com.example.todoproject.pages
 
+import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -47,11 +48,12 @@ import com.example.todoproject.components.inputs.AppTextField
 import com.example.todoproject.components.utils.Header
 import com.example.todoproject.components.buttons.IconButtonAction
 import com.example.todoproject.components.inputs.DateAndHourInput
+import com.example.todoproject.components.inputs.ImagePickerInput
 import com.example.todoproject.components.inputs.PeriodicityInput
-import com.example.todoproject.data.entities.TaskEntity
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import androidx.core.net.toUri
 
 /**
  * Convert a string in the format "yyyy-MM-dd" to a LocalDate object
@@ -102,25 +104,27 @@ fun timeToTimePickerState(time: String?): TimePickerState? {
  * @param navController the navController to navigate between screens
  */
 @OptIn(ExperimentalMaterial3Api::class)
-fun updateTask(viewModel: TaskViewModel, title: String, description: String, date: LocalDate?,
-               hours: TimePickerState?, periodicity: String, priority: Int, status: String, taskId: Int, navController: NavController) {
+fun updateTask(
+    viewModel: TaskViewModel, title: String, description: String, date: LocalDate?,
+    hours: TimePickerState?, periodicity: String, priority: Int, status: String, taskId: Int, imageUri: String?, navController: NavController
+) {
 
     if (date != null && hours != null) {
         var now = LocalDateTime.now()
         var dateToCompare = LocalDateTime.of(date.year, date.month, date.dayOfMonth, hours.hour, hours.minute)
 
         if (status == "En cours" && dateToCompare.isBefore(now)) {
-            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, priority, "En retard")
+            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, priority, "En retard", imageUri)
             navController.navigate("detail/${taskId}")
         } else if (status == "En retard" && dateToCompare.isAfter(now)) {
-            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, priority, "En cours")
+            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, priority, "En cours", imageUri)
             navController.navigate("detail/${taskId}")
         } else {
-            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, priority, status)
+            viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, priority, status, imageUri)
             navController.navigate("detail/${taskId}")
         }
     } else {
-        viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, priority, status)
+        viewModel.updateTask(taskId, title, description, date.toString(), timeToString(hours), periodicity, priority, status, imageUri)
         navController.navigate("detail/${taskId}")
     }
 }
@@ -139,6 +143,8 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
     var time: TimePickerState? by remember(task) { mutableStateOf(timeToTimePickerState(task?.hours)) }
     var periodicity: String by remember(task) { mutableStateOf(task?.periodicity ?: "Aucune") }
     var priority: Int by remember(task) { mutableIntStateOf(task?.priority ?: 3) }
+    // "null" string from DB must be treated as actual null
+    var imageUri: String? by remember(task) { mutableStateOf(if (task?.imageUri == "null") null else task?.imageUri) }
 
     val priorityOptions = listOf(3, 2, 1)
     var expanded by remember { mutableStateOf(false) }
@@ -199,6 +205,14 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
                 PeriodicityInput(isChecked = isCheckedPeriodicityInput, onCheckedChange = { isCheckedPeriodicityInput = it },
                     periodicity = periodicity, onPeriodicitySelected = { periodicity = it })
 
+                Spacer(Modifier.height(16.dp))
+
+                Text(text = "Photo de la tâche ", style = MaterialTheme.typography.labelLarge)
+
+                ImagePickerInput(imageUri = imageUri?.let { Uri.parse(it) }, onImageSelected = { imageUri = it?.toString() })
+
+                Spacer(Modifier.height(16.dp))
+
                 Text(text = "Priorité de la tâche", style = MaterialTheme.typography.labelLarge)
 
                 Row(Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceAround) {
@@ -235,7 +249,7 @@ fun UpdateScreen(navController: NavController, viewModel: TaskViewModel, taskId 
 
                 Row(modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center) {
-                    Button(onClick = { updateTask(viewModel, title, description, selectedDate, time, periodicity, priority, task.status, taskId, navController) },
+                    Button(onClick = { updateTask(viewModel, title, description, selectedDate, time, periodicity, priority, task.status, taskId, imageUri, navController) },
                         colors = ButtonDefaults.buttonColors(contentColor = Color.Black, containerColor = Color.LightGray,
                             disabledContainerColor = Color(170, 0, 0, 255)),
                         enabled = areAllInputNotBlank(title, description)) {
