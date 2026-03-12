@@ -104,10 +104,12 @@ fun HomeScreen(navController: NavController, taskViewModel: TaskViewModel, userV
     // The when statement is used to filter the tasks based on the selected filter.
     val tasks by when (selectedFilter) {
         "Toutes" -> taskViewModel.tasks.collectAsState(initial = emptyList())
+        "Date ↑" -> taskViewModel.getTasksSortedByDate().collectAsState(initial = emptyList())
+        "A → Z" -> taskViewModel.getTasksSortedByAlpha().collectAsState(initial = emptyList())
         else -> taskViewModel.getTasksSortedByStatus(selectedFilter).collectAsState(initial = emptyList())
     }
 
-    val filterOptions = listOf("Toutes", "En cours", "Réalisé", "En retard")
+    val filterOptions = listOf("Toutes", "En cours", "Réalisé", "En retard", "Date ↑", "A → Z")
 
     Box(Modifier.fillMaxSize()) {
         //header
@@ -166,17 +168,17 @@ fun HomeScreen(navController: NavController, taskViewModel: TaskViewModel, userV
 
             Box() {
                 Button(
-                    onClick = { expanded = true }, modifier = Modifier.width(150.dp),
+                    onClick = { expanded = true }, modifier = Modifier.width(180.dp),
                     colors = ButtonDefaults.buttonColors(
                         contentColor = Color.Black,
                         containerColor = Color.LightGray
                     )
                 ) {
-                    Text(text = "Trier par: $selectedFilter", fontSize = 10.sp)
+                    Text(text = "Trier : $selectedFilter", fontSize = 10.sp)
                 }
                 DropdownMenu(
                     expanded = expanded, onDismissRequest = { expanded = false },
-                    modifier = Modifier.width(150.dp).background(Color.LightGray)
+                    modifier = Modifier.width(180.dp).background(Color.LightGray)
                 ) {
                     filterOptions.forEach { filter ->
                         DropdownMenuItem(

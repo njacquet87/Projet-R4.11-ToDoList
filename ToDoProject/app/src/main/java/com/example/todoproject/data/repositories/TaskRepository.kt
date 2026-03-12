@@ -16,6 +16,10 @@ interface TaskRepository {
 
     fun getTasksSortedByStatus(status: String): Flow<List<TaskEntity>>
 
+    fun getTasksSortedByDate(): Flow<List<TaskEntity>>
+
+    fun getTasksSortedByAlpha(): Flow<List<TaskEntity>>
+
     suspend fun markTaskAsDone(id: Int?)
 
     suspend fun markTaskAsLate(id: Int?)

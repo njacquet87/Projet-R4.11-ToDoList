@@ -17,6 +17,10 @@ class OfflineTaskRepository(private val taskDao: TaskDao) : TaskRepository {
 
     override fun getTasksSortedByStatus(status: String): Flow<List<TaskEntity>> = taskDao.getTasksSortedByStatus(status)
 
+    override fun getTasksSortedByDate(): Flow<List<TaskEntity>> = taskDao.getTasksSortedByDate()
+
+    override fun getTasksSortedByAlpha(): Flow<List<TaskEntity>> = taskDao.getTasksSortedByAlpha()
+
     override suspend fun markTaskAsDone(id: Int?) = taskDao.markAsDone(id)
 
     override suspend fun markTaskAsLate(id: Int?) = taskDao.marckAsLate(id)

@@ -71,6 +71,14 @@ class TaskViewModel(private val repository: TaskRepository, private val userRepo
         return repository.getTasksSortedByStatus(status)
     }
 
+    fun getTasksSortedByDate(): Flow<List<TaskEntity>> {
+        return repository.getTasksSortedByDate()
+    }
+
+    fun getTasksSortedByAlpha(): Flow<List<TaskEntity>> {
+        return repository.getTasksSortedByAlpha()
+    }
+
     fun delete(task: TaskEntity) {
         viewModelScope.launch {
             repository.deleteTask(task)

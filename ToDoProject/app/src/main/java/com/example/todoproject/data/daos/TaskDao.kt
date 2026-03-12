@@ -35,6 +35,12 @@ interface TaskDao {
     @Query("SELECT * FROM Tasks WHERE status = :status ORDER BY date, hours")
     fun getTasksSortedByStatus(status: String): Flow<List<TaskEntity>>
 
+    @Query("SELECT * FROM Tasks ORDER BY CASE WHEN date = 'null' OR date IS NULL THEN 1 ELSE 0 END ASC, date ASC, hours ASC")
+    fun getTasksSortedByDate(): Flow<List<TaskEntity>>
+
+    @Query("SELECT * FROM Tasks ORDER BY title ASC")
+    fun getTasksSortedByAlpha(): Flow<List<TaskEntity>>
+
     @Query("UPDATE Tasks SET status = 'Réalisé' WHERE id = :id")
     suspend fun markAsDone(id: Int?)
 
