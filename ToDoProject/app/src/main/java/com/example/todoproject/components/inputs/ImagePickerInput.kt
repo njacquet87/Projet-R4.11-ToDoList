@@ -54,24 +54,17 @@ fun ImagePickerInput(imageUri: Uri?, onImageSelected: (Uri?) -> Unit) {
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        onImageSelected(uri)
-    }
+    ) { uri: Uri? -> onImageSelected(uri) }
 
     Column {
-        Text(text = "Photo de la tâche", fontSize = 12.sp)
         Spacer(modifier = Modifier.height(4.dp))
 
         if (imageUri != null) {
             IconButton(onClick = { onImageSelected(null) }) {
                 Icon(Icons.Filled.Delete, contentDescription = "Supprimer", tint = Color.Red)
             }
-            AsyncImage(
-                model = imageUri,
-                contentDescription = "Photo tâche",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(8.dp))
-            )
+            AsyncImage(model = imageUri, contentDescription = "Photo tâche", contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(8.dp)))
         } else {
             Box(
                 modifier = Modifier

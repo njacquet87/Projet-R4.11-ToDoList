@@ -15,7 +15,7 @@ import com.example.todoproject.data.entities.UserEntity
  * This class defines the database configuration.
  * The version in the @Database annotation should be incremented whenever the database schema is changed.
  */
-@Database(entities = [TaskEntity::class, UserEntity::class], version = 5, exportSchema = false)
+@Database(entities = [TaskEntity::class, UserEntity::class], version = 6, exportSchema = false)
 abstract class TaskDatabase : RoomDatabase() {
 
     abstract fun taskDao(): TaskDao
@@ -33,6 +33,7 @@ abstract class TaskDatabase : RoomDatabase() {
                     .addMigrations(MIGRATION_2_3)
                     .addMigrations(MIGRATION_3_4)
                     .addMigrations(MIGRATION_4_5)
+                    .addMigrations(MIGRATION_5_6)
                     .build()
                     .also { Instance = it }
             }
@@ -60,6 +61,12 @@ abstract class TaskDatabase : RoomDatabase() {
         val MIGRATION_4_5 = object : androidx.room.migration.Migration(4, 5) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("CREATE TABLE IF NOT EXISTS `User` (`id` INTEGER NOT NULL, `nbrOfTaskCompleted` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))")
+            }
+        }
+
+        val MIGRATION_5_6 = object : androidx.room.migration.Migration(5, 6) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE Tasks ADD COLUMN imageUri TEXT DEFAULT null")
             }
         }
     }

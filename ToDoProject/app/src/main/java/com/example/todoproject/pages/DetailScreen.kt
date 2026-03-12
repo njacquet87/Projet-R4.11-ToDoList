@@ -1,5 +1,6 @@
 package com.example.todoproject.pages
 
+import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -7,10 +8,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,6 +24,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,7 +42,10 @@ import com.example.todoproject.components.buttons.IconButtonAction
 import com.example.todoproject.components.taskComponents.TaskDetail
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.todoproject.ViewModel.UserViewModel
 import com.example.todoproject.components.animations.MarkAnimation
 import com.example.todoproject.components.popup.DeletePopUp
@@ -134,6 +141,22 @@ fun DetailScreen(navController: NavController, viewModel: TaskViewModel, taskId 
 
                             // Priority
                             TaskDetail("Priorité : ", task.priority.toString())
+
+                            // Image
+                            Text(text = "Photo de la tâche : ", fontSize = 20.sp)
+                            val uri = if (!task.imageUri.isNullOrBlank() && task.imageUri != "null") Uri.parse(task.imageUri) else null
+
+                            if (uri != null) {
+                                AsyncImage(model = uri, contentDescription = "Photo", modifier = Modifier
+                                    .clip(RoundedCornerShape(4.dp)),
+                                    contentScale = ContentScale.Crop)
+                            } else {
+                                Text(text = "Aucune information disponible pour ce champ", fontSize = 13.sp, modifier = Modifier
+                                    .clip(RoundedCornerShape(10.dp)).background(color = Color.LightGray)
+                                    .padding(16.dp, 10.dp, 16.dp, 10.dp))
+                            }
+
+                            Spacer(Modifier.height(20.dp))
 
                             Button(onClick = {
                                     markAsDone(viewModel, task)

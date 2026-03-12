@@ -84,8 +84,8 @@ fun timeToString(time: TimePickerState?): String {
  * @param navController the navController to navigate between screens
  */
 @OptIn(ExperimentalMaterial3Api::class)
-fun addTask(viewModel: TaskViewModel, title: String, description: String, date: LocalDate?, hours: TimePickerState?, periodicity: String, priority: Int,navController: NavController) {
-    viewModel.addTask(title, description, date.toString(), timeToString(hours), periodicity, priority)
+fun addTask(viewModel: TaskViewModel, title: String, description: String, date: LocalDate?, hours: TimePickerState?, periodicity: String, priority: Int, imageUri: String?, navController: NavController) {
+    viewModel.addTask(title, description, date.toString(), timeToString(hours), periodicity, priority, imageUri?.toString())
     navController.navigate("home")
 }
 
@@ -192,12 +192,14 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel, userVi
 
             Spacer(Modifier.height(16.dp))
 
+            Text(text = "Photo de la tâche", style = MaterialTheme.typography.labelLarge)
+            
             ImagePickerInput(imageUri = imageUri, onImageSelected = { imageUri = it })
 
             Spacer(Modifier.height(20.dp))
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                Button(onClick = {addTask(viewModel, title, description, selectedDate, time, periodicity, priority, navController)},
+                Button(onClick = {addTask(viewModel, title, description, selectedDate, time, periodicity, priority, imageUri.toString(), navController)},
                     colors = ButtonDefaults.buttonColors(contentColor = Color.Black, containerColor = Color.LightGray,
                         disabledContainerColor = Color(170, 0, 0, 255)
                     ),
