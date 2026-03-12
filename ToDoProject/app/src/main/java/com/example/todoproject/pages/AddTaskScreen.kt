@@ -46,6 +46,7 @@ import com.example.todoproject.components.inputs.AppTextField
 import com.example.todoproject.components.inputs.DateAndHourInput
 import com.example.todoproject.components.utils.Header
 import com.example.todoproject.components.buttons.IconButtonAction
+import com.example.todoproject.components.inputs.ImagePickerInput
 import com.example.todoproject.components.inputs.PeriodicityInput
 import java.time.LocalDate
 
@@ -107,6 +108,8 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel, userVi
 
     val priorityOptions = listOf(3, 2, 1)
     var expanded by remember { mutableStateOf(false) }
+
+    var imageUri by remember { mutableStateOf<android.net.Uri?>(null) }
 
     // header
     Header(userViewModel)
@@ -186,6 +189,10 @@ fun AddTaskScreen(navController: NavController, viewModel: TaskViewModel, userVi
                     }
                 }
             }
+
+            Spacer(Modifier.height(16.dp))
+
+            ImagePickerInput(imageUri = imageUri, onImageSelected = { imageUri = it })
 
             Spacer(Modifier.height(20.dp))
 
